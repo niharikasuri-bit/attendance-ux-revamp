@@ -135,21 +135,21 @@ function PeopleArt() {
 /* ---------- Content for each flow: what needs to be in place first ---------- */
 
 export const REGISTER_STEPS = {
-  intro: "Before you create attendance registers, please make sure you have the following information handy.",
+  intro: "Before you create attendance registers, please make sure you know the following.",
   steps: [
-    { Art: MapArt, title: "Boundary Levels", text: "The boundary levels where attendance will be taken." },
-    { Art: ClockArt, title: "Attendance Frequency", text: "The number of times attendance will be taken each day." },
-    { Art: UploadArt, title: "Excel Template", text: "The template you download, fill in and upload to create the registers." },
+    { Art: MapArt, title: "Boundary Levels", text: "Which boundary levels attendance will be taken at. You get one register for every boundary at these levels." },
+    { Art: ClockArt, title: "Attendance Frequency", text: "Whether attendance will be taken once or twice a day. Every register gets the same number of sessions." },
+    { Art: UploadArt, title: "Excel Template", text: "You will download an Excel template, fill it in, and upload it. The registers are created from that file." },
   ],
 };
 
 export const MAPPING_STEPS = {
-  intro: "Before you map users to registers, please make sure you have the following information handy.",
+  intro: "Before you map users to registers, please make sure you know the following.",
   steps: [
-    { Art: RegistersArt, title: "Attendance Registers", text: "The registers you want to map users to." },
-    { Art: PeopleArt, title: "Users", text: "The user ID, name, username and role of each user." },
-    { Art: CalendarArt, title: "Enrollment Dates", text: "The date from which each user's attendance will be taken." },
-    { Art: UploadArt, title: "Excel Template", text: "The template you download, fill in and upload to map the users." },
+    { Art: RegistersArt, title: "Attendance Registers", text: "Which registers the users will be added to. Registers need to be created before users can be mapped." },
+    { Art: PeopleArt, title: "Users", text: "The user ID, name, username and role of each user. You will enter these in the template." },
+    { Art: CalendarArt, title: "Enrollment Dates", text: "The date from which each user's attendance will be taken. It can be one date for everyone or a date per user." },
+    { Art: UploadArt, title: "Excel Template", text: "You will download an Excel template, fill it in, and upload it. The users are mapped from that file." },
   ],
 };
 

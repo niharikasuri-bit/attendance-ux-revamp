@@ -246,7 +246,7 @@ export default function MapTemplate() {
                 <ChoiceInfo decided={selected.length > 0} title={selected.length ? "Based on your selection" : "Your selection decides who can be marked where"}>
                   {selected.length
                     ? `Your template will be pre-filled with ${plural(selected.length, "register")}, ready for you to add users on all 3 tabs.`
-                    : "Users can only be marked on registers they're mapped to. Each register you pick is added to the Frontline Workers, Attendance Markers and Attendance Approvers tabs."}
+                    : "Users can only be marked on the registers they are mapped to."}
                 </ChoiceInfo>
                 {!loading && hiddenCount > 0 && noticeOpen && (
                   <div role="note" className="mt-4 flex items-start gap-2.5 rounded-md border border-info-foreground/20 bg-info px-4 py-3 text-sm">

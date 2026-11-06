@@ -132,7 +132,7 @@ export default function CustomizeTemplate() {
                 <ChoiceInfo decided={levels.length > 0} title={levels.length ? "Based on your selection" : "Boundary levels decide how many registers you get"}>
                   {levels.length
                     ? registersSummary(levels)
-                    : "Every boundary at a level you pick gets its own register. A lower level, like Settlement, gives you more registers that each cover a smaller area."}
+                    : "You get one register for every boundary at the levels you select."}
                 </ChoiceInfo>
                 <div className="mt-5 grid gap-2 sm:grid-cols-[216px_minmax(0,1fr)] sm:items-center sm:gap-6">
                   <label className="text-sm font-bold text-foreground">
@@ -191,7 +191,7 @@ export default function CustomizeTemplate() {
                 <ChoiceInfo decided={!!frequency} title={frequency ? "Based on your selection" : "Frequency sets how many sessions each register has"}>
                   {frequency
                     ? frequencySummary(frequency, total)
-                    : "Each time attendance is taken in a day is one session. Workers are marked present or absent in every session."}
+                    : "Every register gets this number of attendance sessions each day."}
                 </ChoiceInfo>
                 <div className="mt-4 space-y-3">
                   {FREQUENCIES.map((f) => (
