@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Lightbulb, ListChecks } from "lucide-react";
 import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioDot, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -51,6 +51,26 @@ function frequencyEffect(f, total) {
 /** After picking: "You will create 117 registers, each with 2 attendance sessions a day." */
 function frequencySummary(label, total) {
   return `You will create ${registersText(total)}, ${total === 1 ? "with" : "each with"} ${sessionsText(sessionsOf(label))}.`;
+}
+
+/** Neutral info box: explains what the choice decides, then what the chosen answer creates. */
+function ChoiceInfo({ decided, title, children }) {
+  const Icon = decided ? ListChecks : Lightbulb;
+  return (
+    <div
+      aria-live="polite"
+      className="relative mt-5 flex items-start gap-3.5 overflow-hidden rounded-lg border border-border bg-gradient-to-r from-muted/80 via-card to-card py-4 pl-6 pr-5"
+    >
+      <span className="absolute inset-y-0 left-0 w-1 bg-foreground/70" aria-hidden="true" />
+      <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-card shadow-sm">
+        <Icon className="size-4 text-foreground" aria-hidden="true" />
+      </span>
+      <span className="min-w-0 pt-0.5">
+        <span className="block text-sm font-semibold text-foreground">{title}</span>
+        <span className={`mt-0.5 block text-sm ${decided ? "font-medium text-foreground" : "text-muted-foreground"}`}>{children}</span>
+      </span>
+    </div>
+  );
 }
 
 export default function CustomizeTemplate() {
@@ -166,12 +186,16 @@ export default function CustomizeTemplate() {
                     )}
                   </div>
                 </div>
-                <p
-                  aria-live="polite"
-                  className={`mt-5 rounded-md border border-border bg-muted/60 px-4 py-3 text-sm ${levels.length ? "font-semibold text-foreground" : "text-muted-foreground"}`}
-                >
-                  {levels.length ? registersSummary(levels) : "No boundary levels selected yet. Open the dropdown to see how many registers each level creates."}
-                </p>
+                {levels.length ? (
+                  <ChoiceInfo decided title="Based on your selection">
+                    {registersSummary(levels)}
+                  </ChoiceInfo>
+                ) : (
+                  <ChoiceInfo title="Boundary levels decide how many registers you get">
+                    There are 4 levels: State, LGA, Ward and Settlement. A register is created for every boundary at each level you select, so lower
+                    levels give you more, smaller registers.
+                  </ChoiceInfo>
+                )}
               </>
             )}
 
@@ -198,12 +222,16 @@ export default function CustomizeTemplate() {
                     </button>
                   ))}
                 </div>
-                <p
-                  aria-live="polite"
-                  className={`mt-5 rounded-md border border-border bg-muted/60 px-4 py-3 text-sm ${frequency ? "font-semibold text-foreground" : "text-muted-foreground"}`}
-                >
-                  {frequency ? frequencySummary(frequency, total) : "Nothing selected yet. Each option above shows what your registers will get."}
-                </p>
+                {frequency ? (
+                  <ChoiceInfo decided title="Based on your selection">
+                    {frequencySummary(frequency, total)}
+                  </ChoiceInfo>
+                ) : (
+                  <ChoiceInfo title="Frequency decides how many sessions each register has">
+                    Each time attendance is recorded in a day is one session. Every register gets the same number of sessions, and workers are marked
+                    present or absent in each one.
+                  </ChoiceInfo>
+                )}
               </>
             )}
           </div>
