@@ -100,7 +100,7 @@ export default function CustomizeTemplate() {
                     title="Your registers"
                     decided={levels.length > 0}
                     why="Each register is for one area. A supervisor uses it to mark their workers present or absent."
-                    how="The levels you choose decide how many registers are made. Your template will have one row for each one."
+                    how="Your template will have one row for each register, ready for you to check and upload."
                     outcome={
                       levels.length
                         ? `${total} ${total === 1 ? "register" : "registers"} will be created: ${listText(
