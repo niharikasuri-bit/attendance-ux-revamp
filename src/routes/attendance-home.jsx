@@ -49,7 +49,7 @@ export default function AttendanceHome() {
 
       {introOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/40 p-4" role="dialog" aria-modal="true" aria-label="What is an attendance register?">
-          <div className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-md flex-col overflow-hidden rounded-md bg-card shadow-xl">
+          <div className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-[46rem] flex-col overflow-hidden rounded-md bg-card shadow-xl">
             <button
               aria-label="Close"
               onClick={() => setIntroOpen(false)}
@@ -67,15 +67,15 @@ export default function AttendanceHome() {
               />
               <h2 className="mt-4 text-center text-xl font-bold text-heading">What is an attendance register?</h2>
               <p className="mt-3 rounded-lg bg-info-bg px-4 py-3 text-center text-xs leading-relaxed text-muted-foreground">
-                An attendance register is a ready-to-use list for recording who attended a campaign event.
+                An attendance register is used by a supervisor to mark attendance for frontline workers.
               </p>
               <hr className="mt-5 border-border" />
-              <h3 className="mt-4 text-sm font-bold text-heading">What's inside?</h3>
-              <p className="mt-0.5 text-xs text-muted-foreground">Each register contains:</p>
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <h3 className="mt-4 text-sm font-bold text-heading">About each register</h3>
+              <div className="mt-2 grid gap-2 sm:grid-cols-3">
                 {[
-                  { label: "Where", text: "The boundary the register is for" },
-                  { label: "When", text: "The session when attendance is recorded" },
+                  { label: "Workers listed", text: "The frontline workers in the register's area." },
+                  { label: "Who can open it", text: "Supervisors." },
+                  { label: "What it is used for", text: "Paying the frontline workers." },
                 ].map((item) => (
                   <div key={item.label} className="rounded-lg bg-info-bg p-2.5">
                     <span className="rounded-md bg-chip px-1.5 py-0.5 text-[11px] font-semibold text-heading">{item.label}</span>

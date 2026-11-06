@@ -158,7 +158,7 @@ export const MAPPING_STEPS = {
 export function BeforeYouBegin({ open, onClose, content }) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="font-sans flex max-h-[90vh] max-w-[46rem] flex-col gap-0 bg-white p-0 sm:rounded-xl [&>button:last-child]:right-6 [&>button:last-child]:top-6 [&>button:last-child>svg]:size-6">
+      <DialogContent className="font-sans flex max-h-[90vh] max-w-md flex-col gap-0 bg-white p-0 sm:rounded-xl [&>button:last-child]:right-6 [&>button:last-child]:top-6 [&>button:last-child>svg]:size-6">
         <div className="border-b border-border px-6 pb-5 pt-7 sm:px-8">
           <DialogTitle className="font-sans text-[2rem] font-bold leading-tight text-heading">Here's what you'll do</DialogTitle>
         </div>
