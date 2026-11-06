@@ -6,6 +6,7 @@ import { Checkbox, RadioDot, backButtonClass, primaryButtonClass } from "@/compo
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { attendanceActions, getState } from "@/lib/attendance-store";
 import { ChoiceGuide } from "@/components/choice-guide";
+import { BeforeYouBegin, REGISTER_STEPS } from "@/components/before-you-begin";
 import { hasGeneratedRegisters } from "./attendance-home";
 
 export const BOUNDARY_LEVELS = [
@@ -61,6 +62,8 @@ export default function CustomizeTemplate() {
   const resuming = params.get("step") !== null;
   const [step, setStep] = useState(() => (resuming && params.get("step") === "1" ? 1 : 0));
   const [open, setOpen] = useState(false);
+  // Explain the steps ahead when the flow starts (not when coming back from the review page).
+  const [introOpen, setIntroOpen] = useState(!resuming);
   const dropdownRef = useRef(null);
   const [levels, setLevels] = useState(() => (resuming ? getState().templateLevels : []));
   const [frequency, setFrequency] = useState(() => (resuming ? getState().templateFrequency : null));
@@ -225,6 +228,7 @@ export default function CustomizeTemplate() {
           {step === 1 ? "Review Template" : "Next"}
         </button>
       </FlowFooter>
+      <BeforeYouBegin open={introOpen} onClose={() => setIntroOpen(false)} content={REGISTER_STEPS} />
       <Dialog open={existsAlertOpen} onOpenChange={setExistsAlertOpen}>
         <DialogContent className="max-w-[40rem] gap-0 bg-white px-10 pb-8 pt-10 text-center sm:rounded-lg">
           <svg viewBox="0 0 24 24" className="mx-auto size-14" aria-hidden="true">

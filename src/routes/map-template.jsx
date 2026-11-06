@@ -6,6 +6,7 @@ import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioCard, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { attendanceActions, getRegisters, getState, useAttendanceStore } from "@/lib/attendance-store";
 import { ChoiceGuide } from "@/components/choice-guide";
+import { BeforeYouBegin, MAPPING_STEPS } from "@/components/before-you-begin";
 
 // Steps: 0 registers, 1 enrollment date.
 const LAST_STEP = 1;
@@ -202,6 +203,8 @@ export default function MapTemplate() {
   const selectable = firstTimeMapping ? registers : registers.filter((r) => !r.enrollmentSet || selected.includes(r.id));
   const hiddenCount = registers.length - selectable.length;
   const [noticeOpen, setNoticeOpen] = useState(true);
+  // Explain the steps ahead when the flow starts (not when coming back from the review page).
+  const [introOpen, setIntroOpen] = useState(!resuming);
 
   const loading = usePageLoading();
   const [step, setStep] = useState(() => Math.min(Math.max(Number(stepParam) || 0, 0), LAST_STEP));
@@ -319,6 +322,7 @@ export default function MapTemplate() {
           {step === LAST_STEP ? "Review Template" : "Next"}
         </button>
       </FlowFooter>
+      <BeforeYouBegin open={introOpen} onClose={() => setIntroOpen(false)} content={MAPPING_STEPS} />
     </AppShell>
   );
 }
