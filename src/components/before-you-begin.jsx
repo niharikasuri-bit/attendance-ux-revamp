@@ -138,7 +138,7 @@ export const REGISTER_STEPS = {
   intro: "You'll set up the registers where workers are marked present or absent. It only takes four simple steps:",
   steps: [
     { Art: MapArt, title: "Pick the Boundaries", text: "Choose the boundaries where attendance will be taken. Each boundary gets its own register." },
-    { Art: ClockArt, title: "Pick How Often", text: "Choose if workers are marked present or absent once or twice a day." },
+    { Art: ClockArt, title: "Pick Once or Twice a Day", text: "Choose if workers are marked present or absent once or twice a day." },
     { Art: SheetArt, title: "Download the File", text: "Check your choices and download an Excel file with one row for each register, already filled in with its area and register ID." },
     { Art: UploadArt, title: "Check It and Upload", text: "Make any changes you need in Excel, then upload the file here. Your registers are created from it." },
   ],
