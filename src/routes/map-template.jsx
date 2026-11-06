@@ -300,9 +300,9 @@ export default function MapTemplate() {
                 )}
               </>
             )}
-            <div className="mt-6 border-t border-border pt-5">
-              <TutorialPrompt question="Not sure how to customize your user mapping template?" />
-            </div>
+          </div>
+          <div className="mt-5">
+            <TutorialPrompt question="Not sure how to customize your user mapping template?" />
           </div>
         </div>
       </main>

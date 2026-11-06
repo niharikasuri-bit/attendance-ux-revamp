@@ -213,9 +213,9 @@ export default function CustomizeTemplate() {
                 </div>
               </>
             )}
-            <div className="mt-6 border-t border-border pt-5">
-              <TutorialPrompt question="Not sure how to customize your attendance register template?" />
-            </div>
+          </div>
+          <div className="mt-5">
+            <TutorialPrompt question="Not sure how to customize your attendance register template?" />
           </div>
         </div>
       </main>
