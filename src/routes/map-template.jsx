@@ -5,7 +5,7 @@ import { ChevronLeft, Info, Search, X } from "lucide-react";
 import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioCard, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { attendanceActions, getRegisters, getState, useAttendanceStore } from "@/lib/attendance-store";
-import { SummaryBox, WithSummary } from "@/components/choice-guide";
+import { PurposeBox, WithSummary } from "@/components/choice-guide";
 import { BeforeYouBegin, MAPPING_STEPS } from "@/components/before-you-begin";
 
 // Steps: 0 registers, 1 enrollment date.
@@ -238,28 +238,31 @@ export default function MapTemplate() {
 
           <WithSummary
               summary={
-                <SummaryBox
-                  title="Your selection"
-                  decided={selected.length > 0}
-                  note="This decides which registers your users are added to, so they can be marked present or absent there."
-                  stat={{ value: selected.length, label: selected.length === 1 ? "register selected" : "registers selected" }}
-                  next={
-                    step === 0
-                      ? "Your template will have these registers filled in, ready for you to add users."
-                      : enrollment === "Same date for all users"
-                        ? "This start date will be filled in for every user in your template."
-                        : "You will enter a start date for each user in your template."
-                  }
-                  rows={
-                    step === 0
-                      ? (() => {
-                          const names = registers.filter((r) => selected.includes(r.id)).map((r) => r.name);
-                          const shown = names.slice(0, 4).map((n, i) => [i === 0 ? "Registers" : "", n]);
-                          return names.length > 4 ? [...shown, ["", `+ ${names.length - 4} more`]] : shown;
-                        })()
-                      : [["Start date", enrollment === "Same date for all users" ? prettyDate(enrollmentDate) : "A date for each user"]]
-                  }
-                />
+                step === 0 ? (
+                  <PurposeBox
+                    title="About this step"
+                    decided={selected.length > 0}
+                    why="Mapping links each user to a register, so they belong to the boundaries that register covers."
+                    how="Once mapped to a register a supervisor, frontline worker, marker, or proximity supervisor belongs to that register’s boundaries."
+                    outcome={
+                      selected.length
+                        ? `${plural(selected.length, "register")} selected. You'll add users to ${selected.length === 1 ? "this register" : "these registers"} in your template.`
+                        : null
+                    }
+                  />
+                ) : (
+                  <PurposeBox
+                    title="About this step"
+                    decided
+                    why="Users can only be marked present or absent from a certain date onward, so an enrollment date needs to be set for each user."
+                    how="The enrollment date decides when each user starts being marked present or absent. A different date means setting it separately for every user on each tab."
+                    outcome={
+                      enrollment === "Same date for all users"
+                        ? `Users in ${selected.length === 1 ? "this register" : `these ${selected.length} registers`} can be marked from ${prettyDate(enrollmentDate)}.`
+                        : "You'll enter a start date for each user in your template."
+                    }
+                  />
+                )
               }
             >
             <div className="rounded-lg border border-border bg-card px-8 py-6">

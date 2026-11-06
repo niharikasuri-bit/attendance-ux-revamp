@@ -5,7 +5,7 @@ import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioDot, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { attendanceActions, getState } from "@/lib/attendance-store";
-import { PurposeBox, SummaryBox, WithSummary } from "@/components/choice-guide";
+import { PurposeBox, WithSummary } from "@/components/choice-guide";
 import { InfoTooltip } from "@/components/info-tooltip";
 import { BeforeYouBegin, REGISTER_STEPS } from "@/components/before-you-begin";
 import { hasGeneratedRegisters } from "./attendance-home";
@@ -99,8 +99,8 @@ export default function CustomizeTemplate() {
                   <PurposeBox
                     title="About this step"
                     decided={levels.length > 0}
-                    why="Attendance is marked area by area. This step sets which areas get their own register."
-                    how="The levels you choose decide how many registers are created."
+                    why="The register is divided by the boundary levels you add. This is needed to identify the specific levels at which attendance is marked."
+                    how="Each selected boundary level becomes its own column, filled with the boundaries selected for the campaign."
                     outcome={
                       levels.length
                         ? `${total} ${total === 1 ? "register" : "registers"} will be created: ${listText(
@@ -110,28 +110,15 @@ export default function CustomizeTemplate() {
                     }
                   />
                 ) : (
-                <SummaryBox
-                    title="Your registers"
-                    decided={step === 0 ? levels.length > 0 : !!frequency}
-                    showStat={step === 1}
-                    note={
-                      step === 0
-                        ? "This decides which areas get a register, so each supervisor can mark attendance for the workers in their area."
-                        : "This decides how often supervisors mark workers present or absent each day."
-                    }
-                    stat={{ value: total, label: total === 1 ? "register will be created" : "registers will be created" }}
-                    next={
-                      step === 0
-                        ? "Your template will have one row for each of these registers."
-                        : `Every register in your template will be set to ${frequency === "Twice a day" ? "twice" : "once"} a day.`
-                    }
-                    rows={
-                      step === 0
-                        ? BOUNDARY_LEVELS.filter((l) => levels.includes(l.label)).map((l) => [l.label, String(countOf(l))])
-                        : [
-                            ["Areas", levels.join(", ")],
-                            ["Attendance", frequency ?? "Not chosen yet"],
-                          ]
+                  <PurposeBox
+                    title="About this step"
+                    decided={!!frequency}
+                    why="This is needed to decide how many times a day attendance is marked for each worker."
+                    how="Each selected time adds its own attendance entry per day, so twice a day means two entries for every worker."
+                    outcome={
+                      frequency
+                        ? `Workers will be marked ${frequency === "Twice a day" ? "twice" : "once"} a day in all ${total} ${total === 1 ? "register" : "registers"}.`
+                        : null
                     }
                   />
                 )
