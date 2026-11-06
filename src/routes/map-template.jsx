@@ -6,6 +6,7 @@ import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioCard, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { attendanceActions, getRegisters, getState, useAttendanceStore } from "@/lib/attendance-store";
 import { ChoiceInfo } from "@/components/choice-guide";
+import { TutorialPrompt } from "@/components/tutorial-prompt";
 import { BeforeYouBegin, MAPPING_STEPS } from "@/components/before-you-begin";
 
 // Steps: 0 registers, 1 enrollment date.
@@ -227,10 +228,15 @@ export default function MapTemplate() {
           <Breadcrumb
             items={[{ label: "Home", to: "/" }, { label: "Attendance Setup & Management", to: "/attendance" }, { label: "Customize your User Mapping Template" }]}
           />
-          <h1 className="mt-3 font-condensed text-3xl font-bold text-heading">Customize your User Mapping Template</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Set up the template by choosing which registers it covers and from when attendance is marked.
-          </p>
+          <div className="mt-3 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+            <div className="min-w-0">
+              <h1 className="font-condensed text-3xl font-bold text-heading">Customize your User Mapping Template</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Set up the template by choosing which registers it covers and from when attendance is marked.
+              </p>
+            </div>
+            <TutorialPrompt question="Not sure how to customize your user mapping template?" />
+          </div>
 
           <div className="mt-5 rounded-lg border border-border bg-card px-8 py-6">
             {step === 0 && (
