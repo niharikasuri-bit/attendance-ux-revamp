@@ -106,7 +106,7 @@ export default function CampaignSetup() {
             edit these details anytime before the campaign begins.
           </p>
 
-          <SectionHeading>Post Campaign Setup</SectionHeading>
+          <SectionHeading>Post Campaign Creation Setup</SectionHeading>
           <TaskList tasks={TASKS.filter((t) => t.to === "/attendance")} />
 
           <SectionHeading>Your Campaign Configuration</SectionHeading>
