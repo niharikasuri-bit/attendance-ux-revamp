@@ -71,10 +71,14 @@ export function LoaderProvider({ children }) {
   const [text, setText] = useState(null);
   // Shows the overlay loader for `minMs` (the time the work would take), then runs `task`, so its
   // result, like a download or the updated list, appears as the overlay closes.
+  // `loaderText` can also be a list of [text, ms] stages, shown one after another on the same overlay.
   const withLoader = useCallback(async (loaderText, task, minMs = 1000) => {
-    setText(loaderText);
+    const stages = Array.isArray(loaderText) ? loaderText : [[loaderText, minMs]];
     try {
-      await wait(minMs);
+      for (const [stageText, ms] of stages) {
+        setText(stageText);
+        await wait(ms);
+      }
       return await task?.();
     } finally {
       setText(null);
@@ -88,5 +92,5 @@ export function LoaderProvider({ children }) {
   );
 }
 
-/** `withLoader(text, task, minMs)`: show the overlay loader while `task` runs. */
+/** `withLoader(text, task, minMs)` or `withLoader([[text, ms], …], task)`: show the overlay loader while `task` runs. */
 export const useOverlayLoader = () => useContext(LoaderCtx);

@@ -104,7 +104,13 @@ export function TemplateUploadPage({
     setUploading(true);
     setError(null);
     try {
-      await withLoader(`Uploading ${file.name}…`, () => finishUpload(file), 1800);
+      await withLoader(
+        [
+          ["Preparing your file for upload…", 1200],
+          ["Uploading your file. This will take a moment…", 1800],
+        ],
+        () => finishUpload(file),
+      );
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed. Please try again.");
     } finally {
@@ -187,6 +193,7 @@ export function TemplateUploadPage({
                     <Download className="size-3.5" /> Download
                   </button>
                 </div>
+                {success.nextStep && (typeof success.nextStep === "function" ? success.nextStep(result) : success.nextStep)}
               </div>
             </div>
           ) : file ? (
