@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { attendanceActions, getState } from "@/lib/attendance-store";
 import { ChoiceInfo } from "@/components/choice-guide";
 import { TutorialPrompt } from "@/components/tutorial-prompt";
+import { InfoTooltip } from "@/components/info-tooltip";
 import { BeforeYouBegin, REGISTER_STEPS } from "@/components/before-you-begin";
 import { hasGeneratedRegisters } from "./attendance-home";
 
@@ -134,9 +135,15 @@ export default function CustomizeTemplate() {
                     : "Registers are created for the areas you choose in the boundaries step."}
                 </ChoiceInfo>
                 <div className="mt-5 grid gap-2 sm:grid-cols-[216px_minmax(0,1fr)] sm:items-center sm:gap-6">
-                  <label className="text-sm font-bold text-foreground">
-                    Boundary level <span className="text-primary">*</span>
-                  </label>
+                  <span className="flex items-center gap-1.5">
+                    <label className="text-sm font-bold text-foreground">
+                      Boundary level <span className="text-primary">*</span>
+                    </label>
+                    <InfoTooltip label="What is a boundary level?">
+                      Areas are grouped into levels, from largest to smallest: State, LGA, Ward and Settlement. You get one register for each area at
+                      the levels you choose.
+                    </InfoTooltip>
+                  </span>
                   <div ref={dropdownRef} className="relative flex-1">
                     <button
                       type="button"
