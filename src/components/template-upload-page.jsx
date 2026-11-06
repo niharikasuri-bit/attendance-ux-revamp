@@ -95,8 +95,8 @@ export function TemplateUploadPage({
 
   // From the preview: put the generated workbook in the uploader, then confirm as usual.
   const useGeneratedFile = async (workbook) => {
-    pickFile(await workbookFile(workbook));
     setPreview(null);
+    await withLoader("Preparing your file for upload…", async () => pickFile(await workbookFile(workbook)), 1200);
   };
 
   const confirmUpload = async () => {
@@ -193,10 +193,11 @@ export function TemplateUploadPage({
                     <Download className="size-3.5" /> Download
                   </button>
                 </div>
-                {success.nextStep && (typeof success.nextStep === "function" ? success.nextStep(result) : success.nextStep)}
               </div>
             </div>
-          ) : file ? (
+          ) : null}
+          {done && success.nextStep && (typeof success.nextStep === "function" ? success.nextStep(result) : success.nextStep)}
+          {done ? null : file ? (
             <div className="relative mt-6 rounded-lg bg-card p-4 shadow-sm">
               <button
                 onClick={() => pickFile(null)}

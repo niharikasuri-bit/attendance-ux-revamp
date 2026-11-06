@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, ChevronRight, ChevronUp, CirclePlay, FileText, MessageCircleQuestion, Search, X } from "lucide-react";
 import { DOCS, FAQS, TUTORIALS, pageTopic, topicLabel } from "@/lib/help-content";
+import { TutorialDialog } from "@/components/tutorial-dialog";
 
 const TOPICS = FAQS;
 
@@ -94,14 +95,14 @@ const QUICK = [
 ];
 
 /** A document or video found by search, which opens it in the Help Center. */
-function ResourceList({ items, onGo }) {
+function ResourceList({ items, onGo, onOpen }) {
   return (
     <ul className="rounded-xl border border-[#E6EAEE] bg-white px-1 py-0.5 shadow-[0_1px_2px_rgb(16_24_40/0.04)]">
       {items.map((x) => (
         <li key={x.id} className="border-t border-[#F1F1F1] first:border-0">
           <button
             type="button"
-            onClick={onGo}
+            onClick={() => (x.format ? onGo() : onOpen(x))}
             className="group flex w-full items-center gap-3 rounded-lg px-2 py-[11px] text-left text-[0.9375rem] text-foreground hover:bg-[#F5F8FB] hover:text-heading focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             {x.format ? (
@@ -188,6 +189,7 @@ export function HelpPanel({ id, onClose }) {
     return () => window.removeEventListener("scroll", place);
   }, []);
   const [q, setQ] = useState("");
+  const [tutorial, setTutorial] = useState(null);
   const [openId, setOpenId] = useState(null);
   const term = q.trim().toLowerCase();
 
@@ -278,7 +280,7 @@ export function HelpPanel({ id, onClose }) {
                   <h3 id={`${id}-v`} className={SECTION_HEADING}>
                     Videos
                   </h3>
-                  <ResourceList items={vidHits} onGo={() => go("videos")} />
+                  <ResourceList items={vidHits} onOpen={setTutorial} />
                 </section>
               )}
               {quickShown.length > 0 && <QuickLinks id={id} items={quickShown} onGo={go} />}
@@ -304,7 +306,7 @@ export function HelpPanel({ id, onClose }) {
                   <h3 id={`${id}-t`} className={SECTION_HEADING}>
                     Tutorials
                   </h3>
-                  <ResourceList items={flowTutorials} onGo={() => go("videos")} />
+                  <ResourceList items={flowTutorials} onOpen={setTutorial} />
                 </section>
               )}
               <QuickLinks id={id} items={QUICK} onGo={go} />
@@ -312,6 +314,7 @@ export function HelpPanel({ id, onClose }) {
           )}
         </div>
       </div>
+      <TutorialDialog tutorial={tutorial} onClose={() => setTutorial(null)} />
     </aside>
   );
 }

@@ -70,12 +70,11 @@ export default function AttendanceHome() {
                 An attendance register is used by a supervisor to mark attendance for frontline workers.
               </p>
               <hr className="mt-5 border-border" />
-              <h3 className="mt-4 text-sm font-bold text-heading">About each register</h3>
-              <div className="mt-2 grid gap-2 sm:grid-cols-3">
+              <h3 className="mt-4 text-sm font-bold text-heading">What's inside a register?</h3>
+              <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {[
-                  { label: "Workers listed", text: "The frontline workers in the register's area." },
-                  { label: "Who can open it", text: "Supervisors." },
-                  { label: "What it is used for", text: "Paying the frontline workers." },
+                  { label: "Boundary levels", text: "The boundary the register covers, set when you create the register template." },
+                  { label: "Mapped users", text: "The Frontline Workers, Attendance Markers and Attendance Approvers mapped to the register." },
                 ].map((item) => (
                   <div key={item.label} className="rounded-lg bg-info-bg p-2.5">
                     <span className="rounded-md bg-chip px-1.5 py-0.5 text-[11px] font-semibold text-heading">{item.label}</span>
@@ -89,6 +88,11 @@ export default function AttendanceHome() {
                 <span className="font-semibold text-foreground">Add or remove users</span> from the register, then mark each user as{" "}
                 <span className="rounded-md bg-green-100 px-1.5 py-0.5 text-[11px] font-medium text-green-800">Present</span> or{" "}
                 <span className="rounded-md bg-red-100 px-1.5 py-0.5 text-[11px] font-medium text-red-800">Absent</span> as attendance is recorded.
+              </p>
+              <hr className="mt-5 border-border" />
+              <h3 className="mt-4 text-sm font-bold text-heading">What is it used for?</h3>
+              <p className="mt-2 rounded-lg bg-info-bg px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+                The attendance recorded in the register is used to <span className="font-semibold text-foreground">pay the frontline workers</span>.
               </p>
             </div>
             <div className="shrink-0 px-6 pb-6 pt-4">

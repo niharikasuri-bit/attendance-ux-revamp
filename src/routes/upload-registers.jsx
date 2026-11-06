@@ -65,8 +65,11 @@ export default function UploadRegisters() {
           <div role="note" className="mt-5 flex items-start gap-3 rounded-md border-l-4 border-info-foreground bg-info px-4 py-3">
             <Info className="mt-0.5 size-5 shrink-0 text-info-foreground" aria-hidden="true" />
             <div>
-              <p className="text-sm font-bold text-heading">Info</p>
-              <p className="mt-0.5 text-sm text-foreground">Proceed to map users to your registers so attendance can start being marked.</p>
+              <p className="text-sm font-bold text-heading">What's next</p>
+              <p className="mt-0.5 text-sm text-foreground">
+                After this, you can map users to your registers. Mapping puts your Frontline Workers, Attendance Markers and Attendance Approvers on the
+                register for their boundary, so attendance can be marked for them.
+              </p>
             </div>
           </div>
         ),
