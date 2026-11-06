@@ -100,7 +100,7 @@ export default function CustomizeTemplate() {
                     title="About this step"
                     decided={levels.length > 0}
                     why="This makes sure every supervisor has a register for the area where they mark attendance."
-                    how="Each level you choose adds a row to your template for every area at that level."
+                    how="The levels you choose decide how many registers are created."
                     outcome={
                       levels.length
                         ? `${total} ${total === 1 ? "register" : "registers"} will be created: ${listText(
