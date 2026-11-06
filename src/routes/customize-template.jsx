@@ -139,8 +139,8 @@ export default function CustomizeTemplate() {
                       Boundary level <span className="text-primary">*</span>
                     </label>
                     <InfoTooltip label="What is a boundary level?">
-                      Areas are grouped into levels, from largest to smallest: State, LGA, Ward and Settlement. You get one register for each area at
-                      the levels you choose.
+                      A boundary level is a type of area. State is the largest, then LGA, then Ward, and Settlement is the smallest. Each area sits
+                      inside an area at the level above it.
                     </InfoTooltip>
                   </span>
                   <div ref={dropdownRef} className="relative flex-1">
