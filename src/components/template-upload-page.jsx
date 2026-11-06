@@ -96,7 +96,13 @@ export function TemplateUploadPage({
   // From the preview: put the generated workbook in the uploader, then confirm as usual.
   const useGeneratedFile = async (workbook) => {
     setPreview(null);
-    await withLoader("Preparing your file for upload…", async () => pickFile(await workbookFile(workbook)), 1200);
+    await withLoader(
+      [
+        ["Preparing your file for upload…", 1200],
+        ["Uploading your file. This will take a moment…", 1800],
+      ],
+      async () => pickFile(await workbookFile(workbook)),
+    );
   };
 
   const confirmUpload = async () => {
@@ -104,13 +110,7 @@ export function TemplateUploadPage({
     setUploading(true);
     setError(null);
     try {
-      await withLoader(
-        [
-          ["Preparing your file for upload…", 1200],
-          ["Uploading your file. This will take a moment…", 1800],
-        ],
-        () => finishUpload(file),
-      );
+      await withLoader("Confirming your upload…", () => finishUpload(file), 1200);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed. Please try again.");
     } finally {

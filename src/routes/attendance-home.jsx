@@ -66,29 +66,50 @@ export default function AttendanceHome() {
                 height={1024}
               />
               <h2 className="mt-4 text-center text-xl font-bold text-heading">What is an attendance register?</h2>
-              <p className="mt-3 rounded-lg bg-info-bg px-4 py-3 text-center text-xs leading-relaxed text-muted-foreground">
-                An attendance register is used by a supervisor to mark attendance for frontline workers.
+              <p className="mt-3 rounded-lg bg-info-bg px-4 py-3 text-center text-sm leading-relaxed text-foreground">
+                An attendance register is a list a supervisor uses to mark frontline workers present or absent. Each register covers one boundary,
+                and lists the people who work there.
               </p>
+
               <hr className="mt-5 border-border" />
               <h3 className="mt-4 text-sm font-bold text-heading">What's inside a register?</h3>
+              <p className="mt-0.5 text-xs text-muted-foreground">You set these when you create the register template.</p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {[
-                  { label: "Boundary levels", text: "The boundary the register covers, set when you create the register template." },
-                  { label: "Mapped users", text: "The Frontline Workers, Attendance Markers and Attendance Approvers mapped to the register." },
+                  { label: "Boundary levels", text: "The boundary the register covers. Every boundary at the levels you choose gets its own register." },
+                  { label: "Sessions", text: "How many times a day attendance is taken: once or twice. Each time is one session." },
                 ].map((item) => (
-                  <div key={item.label} className="rounded-lg bg-info-bg p-2.5">
+                  <div key={item.label} className="rounded-lg bg-info-bg p-3">
                     <span className="rounded-md bg-chip px-1.5 py-0.5 text-[11px] font-semibold text-heading">{item.label}</span>
-                    <p className="mt-1.5 text-[11px] leading-snug text-muted-foreground">{item.text}</p>
+                    <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{item.text}</p>
                   </div>
                 ))}
               </div>
+
+              <hr className="mt-5 border-border" />
+              <h3 className="mt-4 text-sm font-bold text-heading">Who is in a register?</h3>
+              <p className="mt-0.5 text-xs text-muted-foreground">You add these people by mapping users to the register.</p>
+              <div className="mt-2 grid gap-2 sm:grid-cols-3">
+                {[
+                  { label: "Frontline Workers", text: "The people whose attendance is marked." },
+                  { label: "Attendance Markers", text: "The people who mark it." },
+                  { label: "Attendance Approvers", text: "The people who check and approve it." },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-lg bg-info-bg p-3">
+                    <span className="rounded-md bg-chip px-1.5 py-0.5 text-[11px] font-semibold text-heading">{item.label}</span>
+                    <p className="mt-1.5 text-xs leading-snug text-muted-foreground">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+
               <hr className="mt-5 border-border" />
               <h3 className="mt-4 text-sm font-bold text-heading">What can you do with it?</h3>
               <p className="mt-2 rounded-lg bg-info-bg px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-                <span className="font-semibold text-foreground">Add or remove users</span> from the register, then mark each user as{" "}
+                <span className="font-semibold text-foreground">Map users</span> to the register, then mark each frontline worker{" "}
                 <span className="rounded-md bg-green-100 px-1.5 py-0.5 text-[11px] font-medium text-green-800">Present</span> or{" "}
-                <span className="rounded-md bg-red-100 px-1.5 py-0.5 text-[11px] font-medium text-red-800">Absent</span> as attendance is recorded.
+                <span className="rounded-md bg-red-100 px-1.5 py-0.5 text-[11px] font-medium text-red-800">Absent</span> in every session.
               </p>
+
               <hr className="mt-5 border-border" />
               <h3 className="mt-4 text-sm font-bold text-heading">What is it used for?</h3>
               <p className="mt-2 rounded-lg bg-info-bg px-4 py-3 text-xs leading-relaxed text-muted-foreground">
