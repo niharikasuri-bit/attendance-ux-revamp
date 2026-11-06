@@ -28,6 +28,31 @@ function registersSummary(levels) {
   return `You will create ${total} ${total === 1 ? "register" : "registers"}, ${list}.`;
 }
 
+const countOf = (level) => parseInt(level.count, 10) || 0;
+const totalRegisters = (levels) => BOUNDARY_LEVELS.filter((l) => levels.includes(l.label)).reduce((sum, l) => sum + countOf(l), 0);
+const unitOf = (label) => (label === "LGA" ? "LGA" : label.toLowerCase());
+
+/** What picking a level does, shown before it is picked: "Creates 6 registers, one per LGA". */
+function levelEffect(level) {
+  const n = countOf(level);
+  return n === 1 ? `Creates 1 register for the ${unitOf(level.label)}` : `Creates ${n} registers, one per ${unitOf(level.label)}`;
+}
+
+const sessionsOf = (label) => (label === "Twice a day" ? 2 : 1);
+const sessionsText = (n) => `${n === 1 ? "1 attendance session" : `${n} attendance sessions`} a day`;
+const registersText = (n) => `${n} ${n === 1 ? "register" : "registers"}`;
+
+/** Before picking: "Each of your 117 registers will have 2 attendance sessions a day". */
+function frequencyEffect(f, total) {
+  const n = sessionsOf(f.label);
+  return total === 1 ? `Your register will have ${sessionsText(n)}` : `Each of your ${registersText(total)} will have ${sessionsText(n)}`;
+}
+
+/** After picking: "You will create 117 registers, each with 2 attendance sessions a day." */
+function frequencySummary(label, total) {
+  return `You will create ${registersText(total)}, ${total === 1 ? "with" : "each with"} ${sessionsText(sessionsOf(label))}.`;
+}
+
 export default function CustomizeTemplate() {
   const navigate = useNavigate();
   // `?step=N` means we came back from the review page: restore the saved choices.
@@ -56,6 +81,7 @@ export default function CustomizeTemplate() {
   }, [open]);
 
   const allSelected = levels.length === BOUNDARY_LEVELS.length;
+  const total = totalRegisters(levels);
   const toggleLevel = (label) => setLevels((prev) => (prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]));
   const canContinue = step === 0 ? levels.length > 0 : !!frequency;
 
@@ -129,19 +155,23 @@ export default function CustomizeTemplate() {
                             className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-muted"
                           >
                             <Checkbox checked={levels.includes(level.label)} size="size-4.5" />
-                            <span className="text-sm font-semibold text-foreground">{level.label}</span>
-                            <span className="ml-auto text-xs text-muted-foreground">{level.count}</span>
+                            <span className="min-w-0">
+                              <span className="block text-sm font-semibold text-foreground">{level.label}</span>
+                              <span className="block text-xs text-muted-foreground">{levelEffect(level)}</span>
+                            </span>
+                            <span className="ml-auto shrink-0 text-xs text-muted-foreground">{level.count}</span>
                           </button>
                         ))}
                       </div>
                     )}
                   </div>
                 </div>
-                {levels.length > 0 && (
-                  <p aria-live="polite" className="mt-5 rounded-md border border-border bg-muted/60 px-4 py-3 text-sm font-semibold text-foreground">
-                    {registersSummary(levels)}
-                  </p>
-                )}
+                <p
+                  aria-live="polite"
+                  className={`mt-5 rounded-md border border-border bg-muted/60 px-4 py-3 text-sm ${levels.length ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                >
+                  {levels.length ? registersSummary(levels) : "No boundary levels selected yet. Open the dropdown to see how many registers each level creates."}
+                </p>
               </>
             )}
 
@@ -163,10 +193,17 @@ export default function CustomizeTemplate() {
                       <span>
                         <span className="block text-sm font-bold text-heading">{f.label}</span>
                         <span className="mt-1.5 inline-block rounded-xs bg-chip px-2 py-1 text-[11px] font-semibold text-heading">{f.chip}</span>
+                        <span className="mt-1.5 block text-xs text-muted-foreground">{frequencyEffect(f, total)}</span>
                       </span>
                     </button>
                   ))}
                 </div>
+                <p
+                  aria-live="polite"
+                  className={`mt-5 rounded-md border border-border bg-muted/60 px-4 py-3 text-sm ${frequency ? "font-semibold text-foreground" : "text-muted-foreground"}`}
+                >
+                  {frequency ? frequencySummary(frequency, total) : "Nothing selected yet. Each option above shows what your registers will get."}
+                </p>
               </>
             )}
           </div>
