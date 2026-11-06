@@ -1,338 +1,296 @@
-// Live previews shown right under each question, so people can see what their choice
-// does to the register or template while they are still answering.
-import { useEffect, useRef, useState } from "react";
-import { PencilLine, Sparkles } from "lucide-react";
+// A mini copy of the template that fills itself in as people answer each question,
+// so they can see what every choice does to the file they'll download.
+import { useState } from "react";
+import { FileSpreadsheet, PencilLine } from "lucide-react";
+import { getRegisters, getState } from "@/lib/attendance-store";
 
 const plural = (n, word) => `${n} ${n === 1 ? word : `${word}s`}`;
 
-/** Counts smoothly from the previous value to `value`. */
-function useCountUp(value, duration = 450) {
-  const [shown, setShown] = useState(value);
-  const from = useRef(value);
-  useEffect(() => {
-    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const start = from.current;
-    if (reduce || start === value) {
-      from.current = value;
-      setShown(value);
-      return;
-    }
-    let frame;
-    const t0 = performance.now();
-    const tick = (now) => {
-      const p = Math.min((now - t0) / duration, 1);
-      const eased = 1 - (1 - p) ** 3;
-      setShown(Math.round(start + (value - start) * eased));
-      if (p < 1) frame = requestAnimationFrame(tick);
-      else from.current = value;
-    };
-    frame = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(frame);
-      from.current = value;
-    };
-  }, [value, duration]);
-  return shown;
-}
+/* ---------- Shared pieces ---------- */
 
-/** Shared frame: an eyebrow, a live sentence and the visual. */
-function ImpactFrame({ summary, children }) {
+/** Window chrome: file name, tabs, the sheet, and a one-line status. */
+function TemplateWindow({ fileName, tabs, activeTab, onTab, status, children }) {
   return (
-    <section aria-label="Live preview" className="impact-frame mt-6 rounded-lg border border-dashed border-primary/35 bg-selected-bg/60 p-5">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-primary">
-          <Sparkles className="size-3.5" aria-hidden="true" /> Live preview
-        </span>
+    <section aria-label={`Preview of ${fileName}`} className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+      <header className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+        <FileSpreadsheet className="size-4 shrink-0 text-success" aria-hidden="true" />
+        <span className="truncate text-xs font-semibold text-heading">{fileName}</span>
+        <span className="ml-auto shrink-0 text-[11px] font-medium text-muted-foreground">Preview</span>
+      </header>
+      <div className="max-h-[440px] overflow-auto">{children}</div>
+      <div className="flex border-t border-border bg-muted/50 text-[11px] font-semibold" role={onTab ? "tablist" : undefined}>
+        {tabs.map((t) =>
+          onTab ? (
+            <button
+              key={t}
+              type="button"
+              role="tab"
+              aria-selected={t === activeTab}
+              onClick={() => onTab(t)}
+              className={`border-r border-border px-3 py-2 transition-colors ${
+                t === activeTab ? "-mt-px border-t-2 border-t-success bg-card text-heading" : "text-muted-foreground hover:text-heading"
+              }`}
+            >
+              {t}
+            </button>
+          ) : (
+            <span key={t} className="-mt-px border-r border-t-2 border-border border-t-success bg-card px-3 py-2 text-heading">
+              {t}
+            </span>
+          ),
+        )}
+      </div>
+      <footer className="flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-border px-4 py-2.5">
         <p className="text-sm font-semibold text-heading" aria-live="polite">
-          {summary}
+          {status}
         </p>
-      </div>
-      <div className="mt-4" aria-hidden="true">
-        {children}
-      </div>
+        <span className="ml-auto flex items-center gap-3 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-1.5">
+            <span className="size-2.5 rounded-[2px] border border-primary/30 bg-primary/10" /> Filled in from your selections
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="size-2.5 rounded-[2px] border border-dashed border-muted-foreground/50" /> You fill in
+          </span>
+        </span>
+      </footer>
     </section>
   );
 }
 
-/* ---------- Register template: boundary levels ---------- */
-
-/** One row per boundary level; each square is a register that will be created. */
-export function BoundaryImpact({ levels, options }) {
-  const rows = options.map((o) => ({ ...o, n: parseInt(o.count, 10) || 0, on: levels.includes(o.label) }));
-  const total = rows.filter((r) => r.on).reduce((sum, r) => sum + r.n, 0);
-  const shown = useCountUp(total);
-  const summary = total
-    ? `${plural(total, "register")} will be created, one for every boundary at ${levels.length === 1 ? "this level" : "these levels"}.`
-    : "Select a boundary level to see how many registers will be created.";
-
+/** Column header; the column the current question changes is marked. */
+function Th({ children, active, className = "" }) {
   return (
-    <ImpactFrame summary={summary}>
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_180px] lg:items-center">
-        <ul className="space-y-2.5">
-          {rows.map((r) => (
-            <li key={r.label} className="grid grid-cols-[96px_minmax(0,1fr)_40px] items-center gap-3">
-              <span className={`text-xs font-semibold transition-colors ${r.on ? "text-heading" : "text-muted-foreground/70"}`}>{r.label}</span>
-              <span className="flex flex-wrap gap-[3px]">
-                {Array.from({ length: r.n }, (_, i) => (
-                  <span
-                    key={`${r.label}-${i}-${r.on}`}
-                    className={`size-2.5 rounded-[2px] ${r.on ? "impact-pop bg-primary" : "bg-muted-foreground/15"}`}
-                    style={r.on ? { animationDelay: `${Math.min(i * 6, 360)}ms` } : undefined}
-                  />
-                ))}
-              </span>
-              <span className={`text-right text-xs tabular-nums transition-colors ${r.on ? "font-bold text-primary" : "text-muted-foreground/60"}`}>
-                {r.on ? `+${r.n}` : r.n}
-              </span>
-            </li>
-          ))}
-        </ul>
-        <div className="flex flex-row items-baseline gap-2 rounded-md border border-border bg-card px-4 py-3 lg:flex-col lg:items-center lg:gap-0 lg:py-5">
-          <span className={`font-condensed text-4xl font-bold tabular-nums ${total ? "text-primary" : "text-muted-foreground/50"}`}>{shown}</span>
-          <span className="text-xs font-semibold text-muted-foreground">{total === 1 ? "register" : "registers"}</span>
-        </div>
-      </div>
-    </ImpactFrame>
+    <th
+      scope="col"
+      className={`sticky top-0 z-10 whitespace-nowrap border-b border-r border-border px-2.5 py-2 text-left text-[11px] font-semibold last:border-r-0 ${
+        active ? "bg-primary/10 text-primary shadow-[inset_0_-2px_0_var(--color-primary)]" : "bg-muted text-muted-foreground"
+      } ${className}`}
+    >
+      {children}
+    </th>
   );
 }
 
-/* ---------- Register template: attendance frequency ---------- */
-
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const WORKERS = ["Worker 1", "Worker 2", "Worker 3"];
-// A fixed, believable pattern of marks so the grid reads as a real register.
-const ABSENT = new Set(["1-2-1", "2-4-0", "0-5-1"]);
-
-/** A week of a register: each day splits into one cell per session. */
-export function FrequencyImpact({ frequency }) {
-  const sessions = frequency === "Twice a day" ? 2 : frequency ? 1 : 0;
-  const summary = sessions
-    ? `Each day has ${plural(sessions, "attendance session")}, so a worker can be marked ${sessions === 1 ? "once" : "twice"} a day. Sessions = ${sessions} in the template.`
-    : "Choose a frequency to see how a week of attendance will look.";
-
+/** A filled cell. Keyed by value, so it flashes whenever its value changes. */
+function Filled({ value, active }) {
   return (
-    <ImpactFrame summary={summary}>
-      <div className={`overflow-x-auto rounded-md border border-border bg-card transition-opacity ${sessions ? "" : "opacity-50"}`}>
-        <div className="min-w-[560px]">
-          <div className="grid grid-cols-[96px_repeat(7,minmax(0,1fr))] border-b border-border bg-muted/50 text-[11px] font-semibold text-muted-foreground">
-            <span className="px-3 py-2">Register</span>
-            {DAYS.map((d) => (
-              <span key={d} className="border-l border-border px-2 py-2 text-center">
-                {d}
-                <span className="mt-1 flex gap-[3px]">
-                  {Array.from({ length: Math.max(sessions, 1) }, (_, s) => (
-                    <span key={s} className="flex-1 text-[9px] font-medium text-muted-foreground/80">
-                      {sessions === 2 ? `S${s + 1}` : sessions === 1 ? "S1" : "–"}
-                    </span>
-                  ))}
-                </span>
-              </span>
-            ))}
-          </div>
-          {WORKERS.map((w, wi) => (
-            <div key={w} className="grid grid-cols-[96px_repeat(7,minmax(0,1fr))] border-b border-border text-xs last:border-0">
-              <span className="px-3 py-2 font-medium text-heading">{w}</span>
-              {DAYS.map((d, di) => (
-                <span key={d} className="flex gap-[3px] border-l border-border p-1.5">
-                  {Array.from({ length: Math.max(sessions, 1) }, (_, s) => {
-                    const absent = ABSENT.has(`${wi}-${di}-${s}`);
-                    return (
-                      <span
-                        key={`${s}-${sessions}`}
-                        className={`impact-pop flex h-6 flex-1 items-center justify-center rounded-[3px] text-[10px] font-bold ${
-                          !sessions ? "bg-muted" : absent ? "bg-destructive/10 text-destructive" : "bg-success/15 text-success"
-                        }`}
-                        style={{ animationDelay: `${(wi * 7 + di) * 12}ms` }}
-                      >
-                        {sessions ? (absent ? "A" : "P") : ""}
-                      </span>
-                    );
-                  })}
-                </span>
-              ))}
-            </div>
-          ))}
-        </div>
-      </div>
-      {sessions > 0 && (
-        <p className="mt-3 text-xs text-muted-foreground">
-          <strong className="font-semibold text-heading tabular-nums">{WORKERS.length * DAYS.length * sessions}</strong> attendance marks for {WORKERS.length} workers
-          in a week
-        </p>
-      )}
-    </ImpactFrame>
+    <td className={`border-b border-r border-border px-1 py-1 last:border-r-0 ${active ? "bg-primary/[0.03]" : ""}`}>
+      <span key={value} className="cell-flash block truncate rounded-[2px] bg-primary/10 px-1.5 py-1 text-[11px] font-medium text-heading">
+        {value}
+      </span>
+    </td>
   );
 }
 
-/* ---------- User mapping template: registers ---------- */
-
-const USER_TABS = ["Frontline Workers", "Attendance Markers", "Attendance Approvers"];
-const MAX_ROWS = 4;
-
-const boundaryOf = (r) => r.boundaryName || r.boundary?.split(",").pop()?.trim() || "—";
-
-function Legend() {
+function ToFill({ active }) {
   return (
-    <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-[11px] text-muted-foreground">
-      <span className="flex items-center gap-1.5">
-        <span className="size-3 rounded-[2px] border border-primary/30 bg-primary/10" /> Filled in from your selections
+    <td className={`border-b border-r border-border px-1 py-1 last:border-r-0 ${active ? "bg-primary/[0.03]" : ""}`}>
+      <span className="flex items-center gap-1 rounded-[2px] border border-dashed border-muted-foreground/40 px-1.5 py-[3px] text-[11px] text-muted-foreground/80">
+        <PencilLine className="size-3 shrink-0" aria-hidden="true" /> <span className="sr-only">You fill in</span>
       </span>
-      <span className="flex items-center gap-1.5">
-        <span className="size-3 rounded-[2px] border border-dashed border-muted-foreground/50 bg-card" /> You fill in
-      </span>
+    </td>
+  );
+}
+
+/** Not decided yet: a later question fills this. */
+function Pending() {
+  return (
+    <td className="border-b border-r border-border px-1 py-1 last:border-r-0">
+      <span className="block rounded-[2px] bg-muted px-1.5 py-1 text-[11px] text-muted-foreground/60">—</span>
+    </td>
+  );
+}
+
+function Empty() {
+  return <td className="border-b border-r border-border px-1 py-1 last:border-r-0" />;
+}
+
+function MoreRow({ cols, children }) {
+  return (
+    <tr>
+      <td colSpan={cols} className="border-b border-border bg-muted/30 px-3 py-1.5 text-center text-[11px] font-semibold text-primary">
+        {children}
+      </td>
+    </tr>
+  );
+}
+
+function EmptyState({ cols, children }) {
+  return (
+    <tr>
+      <td colSpan={cols} className="px-4 py-10 text-center text-xs text-muted-foreground">
+        {children}
+      </td>
+    </tr>
+  );
+}
+
+/** Two columns on wide screens: the question on the left, the template beside it. */
+export function WithPreview({ preview, children }) {
+  return (
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] xl:gap-8">
+      <div className="min-w-0">{children}</div>
+      <div className="min-w-0 xl:sticky xl:top-4 xl:self-start">{preview}</div>
     </div>
   );
 }
 
-/** The Frontline Workers tab with a pre-filled row appearing for each selected register. */
-export function RegisterMappingImpact({ registers, selected }) {
-  const chosen = registers.filter((r) => selected.includes(r.id));
-  const rows = chosen.slice(0, MAX_ROWS);
-  const more = chosen.length - rows.length;
-  const summary = chosen.length
-    ? `Your template will be pre-filled with ${plural(chosen.length, "register")} on all ${USER_TABS.length} tabs.`
-    : "Select registers to see them pre-filled in your template.";
+/* ---------- Attendance register template ---------- */
+
+const LEVEL_ORDER = ["State", "LGA", "Ward", "Settlement"];
+
+// Sample boundary names so rows read like a real template.
+const NAMES = {
+  State: ["Plateau"],
+  LGA: ["Kanam", "Jos North", "Bokkos", "Mangu", "Pankshin", "Wase"],
+  Ward: ["Dengi", "Gagdi", "Jarmai", "Kantana", "Munbutu", "Namaran", "Gyambau"],
+  Settlement: ["Angwan Garkuwa", "Makabarta A", "General Hospital Area", "Tudun Wada", "Unguwan Rimi"],
+};
+const nameAt = (level, i) => {
+  const list = NAMES[level];
+  return i < list.length ? list[i] : `${list[i % list.length]} ${Math.floor(i / list.length) + 1}`;
+};
+const ROWS_PER_LEVEL = 3;
+
+function firstRegisterNumber() {
+  const numbers = getRegisters(getState()).map((r) => Number(/^BILL (\d{8})$/.exec(r.name)?.[1]) || 0);
+  return Math.max(16273672, ...numbers) + 1;
+}
+
+/** Attendance_Register_Template.xlsx: one row per register, Sessions from the frequency. */
+export function RegisterTemplatePreview({ step, levels, options, frequency }) {
+  const [start] = useState(firstRegisterNumber);
+  const counts = Object.fromEntries(options.map((o) => [o.label, parseInt(o.count, 10) || 0]));
+  const chosen = LEVEL_ORDER.filter((l) => levels.includes(l));
+  const total = chosen.reduce((sum, l) => sum + counts[l], 0);
+  const sessions = frequency === "Twice a day" ? 2 : frequency ? 1 : null;
+  const cols = LEVEL_ORDER.length + 2;
+
+  let offset = 0;
+  const groups = chosen.map((level) => {
+    const depth = LEVEL_ORDER.indexOf(level);
+    const rows = Array.from({ length: Math.min(ROWS_PER_LEVEL, counts[level]) }, (_, i) => ({
+      key: `${level}-${i}`,
+      path: LEVEL_ORDER.map((l, li) => (li > depth ? null : li === depth ? nameAt(level, i) : nameAt(l, 0))),
+      id: `BILL ${start + offset + i}`,
+    }));
+    offset += counts[level];
+    return { level, rows, more: counts[level] - rows.length };
+  });
+
+  const status = !total
+    ? "Select a boundary level to add registers"
+    : `${plural(total, "register")} · Sessions: ${sessions ? `${sessions} per register` : "next question"}`;
 
   return (
-    <ImpactFrame summary={summary}>
-      <div className="overflow-hidden rounded-md border border-border bg-card">
-        <div className="flex border-b border-border bg-muted/50 text-[11px] font-semibold">
-          {USER_TABS.map((t, i) => (
-            <span key={t} className={`border-r border-border px-3 py-2 ${i === 0 ? "bg-card text-heading" : "text-muted-foreground"}`}>
-              {t}
-            </span>
+    <TemplateWindow fileName="Attendance_Register_Template.xlsx" tabs={["Attendance Registers"]} status={status}>
+      <table className="w-full min-w-[520px] table-fixed border-separate border-spacing-0">
+        <caption className="sr-only">Attendance Registers sheet</caption>
+        <thead>
+          <tr>
+            {LEVEL_ORDER.map((l) => (
+              <Th key={l} active={step === 0 && levels.includes(l)}>
+                {l}
+              </Th>
+            ))}
+            <Th active={step === 0 && total > 0} className="w-[112px]">
+              Register ID
+            </Th>
+            <Th active={step === 1} className="w-[72px]">
+              Sessions
+            </Th>
+          </tr>
+        </thead>
+        <tbody>
+          {total === 0 && <EmptyState cols={cols}>Each register you create appears here as a row.</EmptyState>}
+          {groups.map((g) => (
+            <GroupRows key={g.level} group={g} cols={cols} sessions={sessions} step={step} />
           ))}
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[520px] text-left text-xs">
-            <thead className="text-[11px] text-muted-foreground">
-              <tr className="border-b border-border">
-                <th className="px-3 py-2 font-semibold">Name</th>
-                <th className="px-3 py-2 font-semibold">Boundary</th>
-                <th className="px-3 py-2 font-semibold">Register ID</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.length === 0 && (
-                <tr>
-                  <td colSpan={3} className="px-3 py-6 text-center text-muted-foreground">
-                    No registers selected yet
-                  </td>
-                </tr>
-              )}
-              {rows.map((r) => (
-                <tr key={r.id} className="impact-slide border-b border-border last:border-0">
-                  <td className="p-1.5">
-                    <span className="flex h-7 items-center gap-1.5 rounded-[3px] border border-dashed border-muted-foreground/40 px-2 text-muted-foreground/70">
-                      <PencilLine className="size-3" />
-                    </span>
-                  </td>
-                  <td className="p-1.5">
-                    <span className="flex h-7 items-center truncate rounded-[3px] border border-primary/25 bg-primary/10 px-2 font-medium text-heading">{boundaryOf(r)}</span>
-                  </td>
-                  <td className="p-1.5">
-                    <span className="flex h-7 items-center rounded-[3px] border border-primary/25 bg-primary/10 px-2 font-semibold text-heading">{r.name}</span>
-                  </td>
-                </tr>
-              ))}
-              {more > 0 && (
-                <tr>
-                  <td colSpan={3} className="px-3 py-2 text-center text-[11px] font-semibold text-primary">
-                    + {plural(more, "more register")}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <Legend />
-    </ImpactFrame>
+        </tbody>
+      </table>
+    </TemplateWindow>
   );
 }
 
-/* ---------- User mapping template: enrollment date ---------- */
+function GroupRows({ group, cols, sessions, step }) {
+  return (
+    <>
+      {group.rows.map((r) => (
+        <tr key={r.key} className="row-in">
+          {r.path.map((v, i) => (v ? <Filled key={i} value={v} active={step === 0} /> : <Empty key={i} />))}
+          <Filled value={r.id} active={step === 0} />
+          {sessions ? <Filled value={String(sessions)} active={step === 1} /> : <Pending />}
+        </tr>
+      ))}
+      {group.more > 0 && (
+        <MoreRow cols={cols}>
+          + {group.more} more {group.level} {group.more === 1 ? "register" : "registers"}
+        </MoreRow>
+      )}
+    </>
+  );
+}
 
-const PEOPLE = [
-  { tab: "Frontline Workers", start: 1 },
-  { tab: "Attendance Markers", start: 4 },
-  { tab: "Attendance Approvers", start: 7 },
+/* ---------- User mapping template ---------- */
+
+const USER_TABS = [
+  { name: "Frontline Workers", perRegister: 3 },
+  { name: "Attendance Markers", perRegister: 1 },
+  { name: "Attendance Approvers", perRegister: 1 },
 ];
-const SPAN = 12; // days on the timeline
-const SAME_OFFSET = 3; // where the chosen date sits on the timeline
+const MAX_USER_ROWS = 8;
+const boundaryOf = (r) => r.boundaryName || r.boundary?.split(",").pop()?.trim() || "—";
+const fmt = (iso) => {
+  const d = iso ? new Date(`${iso}T00:00:00Z`) : null;
+  return d && !Number.isNaN(d.getTime())
+    ? `${String(d.getUTCDate()).padStart(2, "0")}/${String(d.getUTCMonth() + 1).padStart(2, "0")}/${d.getUTCFullYear()}`
+    : null;
+};
 
-const fmt = (d) => d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+/** Attendee_Template.xlsx: rows per selected register on each tab, Enrollment Date from step 2. */
+export function MappingTemplatePreview({ step, registers, selected, sameDate, date }) {
+  const [tab, setTab] = useState(USER_TABS[0].name);
+  const current = USER_TABS.find((t) => t.name === tab);
+  const chosen = registers.filter((r) => selected.includes(r.id));
+  const allRows = chosen.flatMap((r) => Array.from({ length: current.perRegister }, (_, i) => ({ key: `${r.id}-${i}`, r })));
+  const rows = allRows.slice(0, MAX_USER_ROWS);
+  const more = allRows.length - rows.length;
+  const dateText = fmt(date);
+  const cols = 4;
 
-/** A timeline per user type: users appear on the register from their enrollment date. */
-export function EnrollmentImpact({ sameDate, date }) {
-  const parsed = date ? new Date(`${date}T00:00:00Z`) : null;
-  const valid = parsed && !Number.isNaN(parsed.getTime());
-  const day0 = valid ? new Date(parsed.getTime() - SAME_OFFSET * 86400000) : null;
-  const dayLabel = (i) => (day0 ? new Date(day0.getTime() + i * 86400000).getUTCDate() : i + 1);
-
-  const summary = sameDate
-    ? valid
-      ? `Every user appears on the register from ${fmt(parsed)}. Enrollment Date is pre-filled for everyone.`
-      : "Pick a date to see when users appear on the register."
-    : `You'll enter an Enrollment Date for each user on all ${USER_TABS.length} tabs, so users can start on different days.`;
+  const enrollmentStatus =
+    step === 0 ? "next question" : sameDate ? (dateText ? `${dateText} for everyone` : "pick a date") : "you fill in for each user";
+  const status = chosen.length ? `${plural(chosen.length, "register")} on all 3 tabs · Enrollment Date: ${enrollmentStatus}` : "Select registers to pre-fill them";
 
   return (
-    <ImpactFrame summary={summary}>
-      <div className="overflow-x-auto rounded-md border border-border bg-card p-4">
-        <div className="relative min-w-[520px]">
-          <div className="grid grid-cols-[150px_minmax(0,1fr)] gap-3 pb-2 text-[10px] font-semibold text-muted-foreground">
-            <span />
-            <span className="grid" style={{ gridTemplateColumns: `repeat(${SPAN}, minmax(0,1fr))` }}>
-              {Array.from({ length: SPAN }, (_, i) => (
-                <span key={i} className={`text-center tabular-nums ${sameDate && i === SAME_OFFSET ? "text-primary" : ""}`}>
-                  {dayLabel(i)}
-                </span>
-              ))}
-            </span>
-          </div>
-          {PEOPLE.map((p) => {
-            const start = sameDate ? SAME_OFFSET : p.start;
-            return (
-              <div key={p.tab} className="grid grid-cols-[150px_minmax(0,1fr)] items-center gap-3 py-1.5">
-                <span className="truncate text-xs font-medium text-heading">{p.tab}</span>
-                <span className="relative h-7 rounded-[3px] bg-muted">
-                  <span
-                    className="impact-bar absolute inset-y-0 right-0 flex items-center rounded-[3px] bg-success/20 pl-2 text-[10px] font-bold text-success"
-                    style={{ left: `${(start / SPAN) * 100}%` }}
-                  >
-                    <span className="mr-1.5 h-4 w-[3px] rounded-full bg-success" />
-                    P / A
-                  </span>
-                </span>
-              </div>
-            );
-          })}
-          {sameDate && valid && (
-            <span
-              className="impact-bar pointer-events-none absolute bottom-0 top-5 w-0 border-l-2 border-dashed border-primary"
-              style={{ left: `calc(150px + 0.75rem + (100% - 150px - 0.75rem) * ${SAME_OFFSET / SPAN})` }}
-            />
-          )}
-        </div>
-      </div>
-      <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[11px] text-muted-foreground">
-        <span className="flex items-center gap-1.5">
-          <span className="size-3 rounded-[2px] bg-muted" /> Not on the register yet
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="size-3 rounded-[2px] bg-success/20" /> Can be marked Present or Absent
-        </span>
-        <span className="ml-auto flex items-center gap-1.5 font-semibold text-heading">
-          Enrollment Date:
-          {sameDate ? (
-            <span className="rounded-[3px] border border-primary/25 bg-primary/10 px-2 py-0.5">{valid ? fmt(parsed) : "—"}</span>
-          ) : (
-            <span className="flex items-center gap-1 rounded-[3px] border border-dashed border-muted-foreground/50 px-2 py-0.5 font-medium text-muted-foreground">
-              <PencilLine className="size-3" /> You fill in, per user
-            </span>
-          )}
-        </span>
-      </div>
-    </ImpactFrame>
+    <TemplateWindow fileName="Attendee_Template.xlsx" tabs={USER_TABS.map((t) => t.name)} activeTab={tab} onTab={setTab} status={status}>
+      <table className="w-full min-w-[520px] table-fixed border-separate border-spacing-0">
+        <caption className="sr-only">{tab} sheet</caption>
+        <thead>
+          <tr>
+            <Th>Name</Th>
+            <Th active={step === 0 && chosen.length > 0}>Boundary</Th>
+            <Th active={step === 0 && chosen.length > 0} className="w-[120px]">
+              Register ID
+            </Th>
+            <Th active={step === 1} className="w-[118px]">
+              Enrollment Date
+            </Th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length === 0 && <EmptyState cols={cols}>Each register you select adds rows here, ready for you to add users.</EmptyState>}
+          {rows.map(({ key, r }) => (
+            <tr key={key} className="row-in">
+              <ToFill />
+              <Filled value={boundaryOf(r)} active={step === 0} />
+              <Filled value={r.name} active={step === 0} />
+              {step === 0 ? <Pending /> : sameDate && dateText ? <Filled value={dateText} active /> : <ToFill active />}
+            </tr>
+          ))}
+          {more > 0 && <MoreRow cols={cols}>+ {plural(more, "more row")}</MoreRow>}
+        </tbody>
+      </table>
+    </TemplateWindow>
   );
 }

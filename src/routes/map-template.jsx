@@ -5,7 +5,7 @@ import { ChevronLeft, Info, Search, X } from "lucide-react";
 import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioCard, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { attendanceActions, getRegisters, getState, useAttendanceStore } from "@/lib/attendance-store";
-import { EnrollmentImpact, RegisterMappingImpact } from "@/components/choice-impact";
+import { MappingTemplatePreview, WithPreview } from "@/components/choice-impact";
 
 // Steps: 0 registers, 1 enrollment date.
 const LAST_STEP = 1;
@@ -225,6 +225,17 @@ export default function MapTemplate() {
           </p>
 
           <div className="mt-5 rounded-lg border border-border bg-card px-8 py-6">
+            <WithPreview
+              preview={
+                <MappingTemplatePreview
+                  step={step}
+                  registers={registers}
+                  selected={selected}
+                  sameDate={enrollment === "Same date for all users"}
+                  date={enrollmentDate}
+                />
+              }
+            >
             {step === 0 && (
               <>
                 <h2 className="text-2xl font-bold text-heading">Which registers do you want to map users to?</h2>
@@ -251,10 +262,7 @@ export default function MapTemplate() {
                 {loading ? (
                   <Loader text="Loading registers…" />
                 ) : (
-                  <>
-                    <RegisterPicker registers={selectable} selected={selected} onChange={setSelected} newIds={newIds} />
-                    <RegisterMappingImpact registers={registers} selected={selected} />
-                  </>
+                  <RegisterPicker registers={selectable} selected={selected} onChange={setSelected} newIds={newIds} />
                 )}
               </>
             )}
@@ -278,9 +286,9 @@ export default function MapTemplate() {
                     hint="The campaign start date is selected by default. You can change it if needed."
                   />
                 )}
-                <EnrollmentImpact sameDate={enrollment === "Same date for all users"} date={enrollmentDate} />
               </>
             )}
+            </WithPreview>
           </div>
         </div>
       </main>

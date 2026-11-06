@@ -5,7 +5,7 @@ import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioDot, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { attendanceActions, getState } from "@/lib/attendance-store";
-import { BoundaryImpact, FrequencyImpact } from "@/components/choice-impact";
+import { RegisterTemplatePreview, WithPreview } from "@/components/choice-impact";
 import { hasGeneratedRegisters } from "./attendance-home";
 
 export const BOUNDARY_LEVELS = [
@@ -79,13 +79,14 @@ export default function CustomizeTemplate() {
           </p>
 
           <div className="mt-5 rounded-lg border border-border bg-card px-8 py-6">
+            <WithPreview preview={<RegisterTemplatePreview step={step} levels={levels} options={BOUNDARY_LEVELS} frequency={step === 1 ? frequency : null} />}>
             {step === 0 && (
               <>
                 <h2 className="text-2xl font-bold text-heading">What boundary levels are you generating registers for?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Select one or more boundary levels from the dropdown below. We'll create a register for every boundary at the levels you select.
                 </p>
-                <div className="mt-5 grid gap-2 sm:grid-cols-[216px_minmax(0,1fr)] sm:items-center sm:gap-6">
+                <div className="mt-5 grid gap-2">
                   <label className="text-sm font-bold text-foreground">
                     Boundary level <span className="text-primary">*</span>
                   </label>
@@ -129,7 +130,6 @@ export default function CustomizeTemplate() {
                     )}
                   </div>
                 </div>
-                <BoundaryImpact levels={levels} options={BOUNDARY_LEVELS} />
               </>
             )}
 
@@ -155,9 +155,9 @@ export default function CustomizeTemplate() {
                     </button>
                   ))}
                 </div>
-                <FrequencyImpact frequency={frequency} />
               </>
             )}
+            </WithPreview>
           </div>
         </div>
       </main>
