@@ -9,64 +9,8 @@ import { Loader, usePageLoading } from "@/components/loader";
 
 const ACTIONS = ["Template Downloaded", "Register Generated", "Register Edited", "Register Deleted", "Users Mapped", "Register Downloaded"];
 
-const SEED_GENERATED = [
-  { id: "a-5", register: "BILL 16273677", boundary: "State, LGA, Ward, Settlement", frequency: "once", officer: "Rahul Verma", minute: "36" },
-  { id: "a-4", register: "BILL 16273676", boundary: "State, LGA, Ward", frequency: "twice", officer: "Meera Iyer", minute: "35" },
-  { id: "a-3", register: "BILL 16273675", boundary: "State, LGA", frequency: "once", officer: "Anita Sharma", minute: "34" },
-  { id: "a-2", register: "BILL 16273674", boundary: "State, LGA, Ward", frequency: "twice", officer: "Rahul Verma", minute: "33" },
-  { id: "a-1", register: "BILL 16273673", boundary: "State, LGA, Ward, Settlement", frequency: "once", officer: "Anita Sharma", minute: "32" },
-];
-
-// Historical entries shown beneath anything logged during this session.
-const SEED_LOG = [
-  { id: "a-10", action: "Register Downloaded", register: "BILL 16273676", details: "Signature list downloaded · 12 users", user: "Meera Iyer", role: "Attendance Officer", at: "2025-08-25T17:05:00+05:30" },
-  { id: "a-9", action: "Register Downloaded", register: "BILL 16273677", details: "Attendance report downloaded · 43 users", user: "Rahul Verma", role: "Attendance Officer", at: "2025-08-22T18:20:00+05:30" },
-  {
-    id: "a-8",
-    action: "Users Mapped",
-    register: "BILL 16273677",
-    details: "43 users mapped from Attendee_Template.xlsx · Roles: DISTRIBUTOR, FIELD_SUPPORT, TEAM_SUPERVISOR",
-    user: "Suresh Patel",
-    role: "Data Entry Operator",
-    at: "2025-08-19T15:41:00+05:30",
-  },
-  {
-    id: "a-7",
-    action: "Users Mapped",
-    register: "BILL 16273676",
-    details: "12 users mapped from Attendee_Template.xlsx · Roles: DISTRIBUTOR, WAREHOUSE_MANAGER",
-    user: "Suresh Patel",
-    role: "Data Entry Operator",
-    at: "2025-08-19T15:40:00+05:30",
-  },
-  {
-    id: "a-6",
-    action: "Template Downloaded",
-    register: "",
-    details: "User mapping template downloaded for BILL 16273676, BILL 16273677",
-    user: "Suresh Patel",
-    role: "Data Entry Operator",
-    at: "2025-08-19T10:05:00+05:30",
-  },
-  ...SEED_GENERATED.map((e) => ({
-    id: e.id,
-    action: "Register Generated",
-    register: e.register,
-    details: `Created from Attendance_Register_Template.xlsx · Boundary level: ${e.boundary} · Attendance ${e.frequency} a day · Officer: ${e.officer}`,
-    user: "Aisha Bello",
-    role: "Campaign Supervisor",
-    at: `2025-08-18T11:${e.minute}:00+05:30`,
-  })),
-  {
-    id: "a-0",
-    action: "Template Downloaded",
-    register: "",
-    details: "Attendance register template downloaded · 5 registers · 1 session a day",
-    user: "Aisha Bello",
-    role: "Campaign Supervisor",
-    at: "2025-08-18T09:10:00+05:30",
-  },
-];
+// No sample history: the log shows only what happens in this copy.
+const SEED_LOG = [];
 
 const formatDateTime = (iso) =>
   new Date(iso)

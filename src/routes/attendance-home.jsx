@@ -5,7 +5,7 @@ import { AppShell, Breadcrumb } from "@/components/app-shell";
 import illustration from "@/assets/attendance-illustration.png";
 
 // Set by the upload step once registers have been added.
-export const REGISTER_GENERATED_KEY = "attendanceRegisterGenerated";
+export const REGISTER_GENERATED_KEY = "attendanceUxRevampRegisterGenerated";
 
 /** True once the user has uploaded registers at least once. */
 export function hasGeneratedRegisters() {
