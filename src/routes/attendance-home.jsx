@@ -86,7 +86,6 @@ export default function AttendanceHome() {
 
               <hr className="mt-5 border-border" />
               <h3 className="mt-4 text-sm font-bold text-heading">Who is in a register?</h3>
-              <p className="mt-0.5 text-xs text-muted-foreground">The users mapped to it:</p>
               <div className="mt-2 grid gap-2 sm:grid-cols-3">
                 {[
                   { label: "Frontline Workers", text: "The people whose attendance is marked." },
@@ -110,16 +109,27 @@ export default function AttendanceHome() {
 
               <hr className="mt-5 border-border" />
               <h3 className="mt-4 text-sm font-bold text-heading">Where does a register go after approval?</h3>
-              <p className="mt-2 rounded-lg bg-info-bg px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-                Once the Attendance Approver approves it, the register goes to the Campaign Supervisor for approval and bill generation. It then passes
-                through further checks and approvals before the Payment Approver converts it into a payment advisory.
-              </p>
-
-              <hr className="mt-5 border-border" />
-              <h3 className="mt-4 text-sm font-bold text-heading">What is it used for?</h3>
-              <p className="mt-2 rounded-lg bg-info-bg px-4 py-3 text-xs leading-relaxed text-muted-foreground">
-                The attendance recorded in the register is used to pay the frontline workers.
-              </p>
+              <ol className="mt-2 space-y-0 rounded-lg bg-info-bg px-4 py-3">
+                {[
+                  "The Attendance Approver approves it.",
+                  "The Campaign Supervisor approves it and generates the bill.",
+                  "It passes through further checks and approvals.",
+                  "The Payment Approver converts it into a payment advisory.",
+                  "The frontline workers are paid for the attendance recorded.",
+                ].map((text, i, all) => (
+                  <li key={text} className="relative flex gap-3 pb-3 last:pb-0">
+                    {i < all.length - 1 && <span aria-hidden="true" className="absolute left-[9px] top-5 h-full w-px bg-border" />}
+                    <span
+                      className={`relative grid size-5 shrink-0 place-items-center rounded-full text-[10px] font-bold ${
+                        i === all.length - 1 ? "bg-green-700 text-white" : "bg-heading text-white"
+                      }`}
+                    >
+                      {i + 1}
+                    </span>
+                    <span className={`pt-0.5 text-xs leading-snug ${i === all.length - 1 ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{text}</span>
+                  </li>
+                ))}
+              </ol>
             </div>
             <div className="shrink-0 px-6 pb-6 pt-4">
               <Link
