@@ -1,4 +1,4 @@
-// "What are we going to do?" popup shown when a flow starts: the steps ahead in everyday words.
+// "Here's what you'll do" popup shown when a flow starts: the steps ahead in everyday words.
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 
 const P = "var(--color-primary)";
@@ -135,21 +135,21 @@ function PeopleArt() {
 /* ---------- Content for each flow: what needs to be in place first ---------- */
 
 export const REGISTER_STEPS = {
-  intro: "We're going to set up the sheets where workers are marked present or absent. Here's how:",
+  intro: "You'll set up the sheets where workers are marked present or absent. It only takes four simple steps:",
   steps: [
     { Art: MapArt, title: "Pick the Areas", text: "Choose the areas where attendance will be taken. Each area gets its own sheet." },
     { Art: ClockArt, title: "Pick How Often", text: "Choose if workers are marked present or absent once or twice a day." },
-    { Art: SheetArt, title: "Download the File", text: "Check your choices and download the Excel file we make for you." },
+    { Art: SheetArt, title: "Download the File", text: "Check your choices and download the Excel file made for you." },
     { Art: UploadArt, title: "Fill It In and Upload", text: "Add the missing details in Excel, then upload the file here." },
   ],
 };
 
 export const MAPPING_STEPS = {
-  intro: "We're going to add people to the attendance sheets so they can be marked present or absent. Here's how:",
+  intro: "You'll add people to the attendance sheets so they can be marked present or absent. It only takes four simple steps:",
   steps: [
     { Art: RegistersArt, title: "Pick the Sheets", text: "Choose the attendance sheets you want to add people to." },
     { Art: CalendarArt, title: "Pick a Start Date", text: "Choose the date from which people can be marked present or absent." },
-    { Art: SheetArt, title: "Download the File", text: "Check your choices and download the Excel file we make for you." },
+    { Art: SheetArt, title: "Download the File", text: "Check your choices and download the Excel file made for you." },
     { Art: PeopleArt, title: "Add People and Upload", text: "Add each person's details in Excel, then upload the file here." },
   ],
 };
@@ -160,7 +160,7 @@ export function BeforeYouBegin({ open, onClose, content }) {
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="font-sans flex max-h-[90vh] max-w-[46rem] flex-col gap-0 bg-white p-0 sm:rounded-xl [&>button:last-child]:right-6 [&>button:last-child]:top-6 [&>button:last-child>svg]:size-6">
         <div className="border-b border-border px-6 pb-5 pt-7 sm:px-8">
-          <DialogTitle className="font-sans text-[2rem] font-bold leading-tight text-heading">What are we going to do?</DialogTitle>
+          <DialogTitle className="font-sans text-[2rem] font-bold leading-tight text-heading">Here's what you'll do</DialogTitle>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5 sm:px-8">
           <DialogDescription className="text-base leading-relaxed text-foreground/80">{content.intro}</DialogDescription>
