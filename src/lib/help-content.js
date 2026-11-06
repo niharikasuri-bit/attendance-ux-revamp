@@ -48,6 +48,12 @@ export const FAQS = [
     a: "The day a person joins a register. Attendance can only be marked for them from that date onwards. A de-enrollment date is optional and is the day they leave.",
   },
   {
+    id: "boundary-level",
+    topic: "registers",
+    q: "What is a boundary level?",
+    a: "A layer of area, from largest to smallest: State, LGA, Ward and Settlement. When you choose a level, you get one register for each area at that level, for example one register for each ward.",
+  },
+  {
     id: "session",
     topic: "registers",
     q: "What is a session?",

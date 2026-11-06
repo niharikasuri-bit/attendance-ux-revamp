@@ -1,18 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, ChevronRight, ChevronUp, CirclePlay, FileText, MessageCircleQuestion, Search, X } from "lucide-react";
-import { DOCS, FAQS, TUTORIALS, topicLabel } from "@/lib/help-content";
+import { DOCS, FAQS, TUTORIALS, pageTopic, topicLabel } from "@/lib/help-content";
 
 const TOPICS = FAQS;
 
-// Questions suggested for the page they're on; search covers them all.
-const PAGE_TOPICS = [
-  [/^\/attendance\/(customize|register-summary|upload)$/, ["register", "template", "session", "one-per-boundary"]],
-  [/^\/attendance\/(map-template|map-summary|upload-mapping)$/, ["mapping", "enrollment", "hidden"]],
-  [/^\/attendance\/registers/, ["register", "active", "one-per-boundary", "enrollment"]],
-  [/^\/attendance\/audit-log$/, ["register", "active", "mapping", "template"]],
+// Terms used in each flow, explained as "What is …?" questions; search covers every question.
+const PAGE_TERMS = [
+  [/^\/attendance\/(customize|register-summary|upload)$/, ["register", "boundary-level", "session", "template"]],
+  [/^\/attendance\/(map-template|map-summary|upload-mapping)$/, ["mapping", "register", "enrollment", "template"]],
+  [/^\/attendance\/registers/, ["register", "active", "enrollment", "mapping"]],
+  [/^\/attendance\/audit-log$/, ["register", "template", "mapping", "active"]],
 ];
-const DEFAULT_TOPICS = ["register", "template", "mapping", "enrollment"];
+const DEFAULT_TERMS = ["register", "boundary-level", "template", "mapping"];
 
 /** A small scene for the top of the panel: someone at a laptop with a question bubble. Decorative. */
 export function HelpArt({ className = "mb-1 h-auto w-44" }) {
@@ -156,8 +156,8 @@ function QuickLinks({ id, items, onGo }) {
   );
 }
 
-/** Help, beside the page, only when asked: "How can we help you?" with search, questions suggested for the
- *  page they're on and quick links into the Help Center. Search covers every question, document
+/** Help, beside the page, only when asked: "How can we help you?" with search, the terms used on the
+ *  page (as FAQs), tutorials for the flow and quick links into the Help Center. Search covers every question, document
  *  and video. Escape closes it. */
 export function HelpPanel({ id, onClose }) {
   const { pathname } = useLocation();
@@ -192,8 +192,10 @@ export function HelpPanel({ id, onClose }) {
   const term = q.trim().toLowerCase();
 
   const path = pathname.replace(/\/+$/, "") || "/";
-  const suggestedIds = PAGE_TOPICS.find(([re]) => re.test(path))?.[1] ?? DEFAULT_TOPICS;
-  const suggested = suggestedIds.map((s) => TOPICS.find((t) => t.id === s));
+  const termIds = PAGE_TERMS.find(([re]) => re.test(path))?.[1] ?? DEFAULT_TERMS;
+  const terms = termIds.map((s) => TOPICS.find((t) => t.id === s));
+  // Tutorials for the flow this page belongs to (getting-started ones elsewhere).
+  const flowTutorials = TUTORIALS.filter((t) => t.topic === pageTopic(path));
   const hits = term ? TOPICS.filter((t) => `${t.q} ${t.a}`.toLowerCase().includes(term)) : [];
   // Searching covers everything: documents, videos and the quick links too, not just questions
   const docHits = term ? DOCS.filter((d) => `${d.title} ${d.desc} ${topicLabel(d.topic)}`.toLowerCase().includes(term)) : [];
@@ -293,10 +295,18 @@ export function HelpPanel({ id, onClose }) {
             <>
               <section aria-labelledby={`${id}-a`}>
                 <h3 id={`${id}-a`} className={SECTION_HEADING}>
-                  Suggested for this page
+                  Terminology
                 </h3>
-                <QuestionList id={id} topics={suggested} openId={openId} onToggle={setOpenId} />
+                <QuestionList id={id} topics={terms} openId={openId} onToggle={setOpenId} />
               </section>
+              {flowTutorials.length > 0 && (
+                <section aria-labelledby={`${id}-t`}>
+                  <h3 id={`${id}-t`} className={SECTION_HEADING}>
+                    Tutorials
+                  </h3>
+                  <ResourceList items={flowTutorials} onGo={() => go("videos")} />
+                </section>
+              )}
               <QuickLinks id={id} items={QUICK} onGo={go} />
             </>
           )}
