@@ -228,14 +228,13 @@ export default function MapTemplate() {
           <Breadcrumb
             items={[{ label: "Home", to: "/" }, { label: "Attendance Setup & Management", to: "/attendance" }, { label: "Customize your User Mapping Template" }]}
           />
-          <div className="mt-3 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+          <div className="mt-3">
             <div className="min-w-0">
               <h1 className="font-condensed text-3xl font-bold text-heading">Customize your User Mapping Template</h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 Set up the template by choosing which registers it covers and from when attendance is marked.
               </p>
             </div>
-            <TutorialPrompt question="Not sure how to customize your user mapping template?" />
           </div>
 
           <div className="mt-5 rounded-lg border border-border bg-card px-8 py-6">
@@ -301,6 +300,9 @@ export default function MapTemplate() {
                 )}
               </>
             )}
+            <div className="mt-6 border-t border-border pt-5">
+              <TutorialPrompt question="Not sure how to customize your user mapping template?" />
+            </div>
           </div>
         </div>
       </main>

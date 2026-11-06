@@ -112,14 +112,13 @@ export default function CustomizeTemplate() {
               { label: "Customize your Attendance Register Template" },
             ]}
           />
-          <div className="mt-3 flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+          <div className="mt-3">
             <div className="min-w-0">
               <h1 className="font-condensed text-3xl font-bold text-heading">Customize your Attendance Register Template</h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 Customize your attendance register template by selecting the boundary levels and attendance frequency.
               </p>
             </div>
-            <TutorialPrompt question="Not sure how to customize your attendance register template?" />
           </div>
 
           <div className="mt-5 rounded-lg border border-border bg-card px-8 py-6">
@@ -214,6 +213,9 @@ export default function CustomizeTemplate() {
                 </div>
               </>
             )}
+            <div className="mt-6 border-t border-border pt-5">
+              <TutorialPrompt question="Not sure how to customize your attendance register template?" />
+            </div>
           </div>
         </div>
       </main>
