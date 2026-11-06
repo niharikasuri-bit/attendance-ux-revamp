@@ -137,7 +137,7 @@ function PeopleArt() {
 export const REGISTER_STEPS = {
   intro: "Before you create attendance registers, please make sure you have the following information handy.",
   steps: [
-    { Art: MapArt, title: "Attendance Boundaries", text: "The boundaries where attendance will be taken. A register is created for each of these areas." },
+    { Art: MapArt, title: "Boundary Levels", text: "The boundary levels where attendance will be taken. A register is created for every boundary at these levels." },
     { Art: ClockArt, title: "Attendance Frequency", text: "How many times a day attendance will be taken." },
   ],
 };
