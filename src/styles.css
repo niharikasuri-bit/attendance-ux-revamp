@@ -140,10 +140,21 @@
   }
 }
 
-/* Template preview beside each question: new rows slide in, changed cells flash. */
-@keyframes row-in {
+/* Live previews under each question: squares and cells pop in, rows slide in, bars glide. */
+@keyframes impact-pop {
   from {
-    transform: translateY(-4px);
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes impact-slide {
+  from {
+    transform: translateY(-6px);
     opacity: 0;
   }
   to {
@@ -152,27 +163,24 @@
   }
 }
 
-@keyframes cell-flash {
-  0% {
-    background-color: color-mix(in oklab, var(--color-primary) 38%, transparent);
-    box-shadow: 0 0 0 2px color-mix(in oklab, var(--color-primary) 45%, transparent);
-  }
-  100% {
-    background-color: color-mix(in oklab, var(--color-primary) 10%, transparent);
-  }
+.impact-pop {
+  animation: impact-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-.row-in {
-  animation: row-in 0.3s ease-out both;
+.impact-slide {
+  animation: impact-slide 0.3s ease-out both;
 }
 
-.cell-flash {
-  animation: cell-flash 0.9s ease-out both;
+.impact-bar {
+  transition: left 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .row-in,
-  .cell-flash {
+  .impact-pop,
+  .impact-slide {
     animation: none;
+  }
+  .impact-bar {
+    transition: none;
   }
 }
