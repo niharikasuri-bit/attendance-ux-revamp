@@ -126,8 +126,8 @@ export default function CustomizeTemplate() {
                       Boundary level <span className="text-primary">*</span>
                     </label>
                     <InfoTooltip label="What is a boundary level?">
-                      Boundary levels are the levels a place is divided into, from the biggest area to the smallest. Each smaller area sits inside a
-                      bigger one.
+                      Boundary levels define how a location is divided and organised into different levels, arranged from the broadest to the most
+                      specific.
                     </InfoTooltip>
                   </span>
                   <div ref={dropdownRef} className="relative flex-1">
