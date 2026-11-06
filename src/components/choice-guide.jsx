@@ -5,8 +5,9 @@
  * `title`: box heading. `decided`: something has been chosen. `note`: shown before that.
  * `stat`: { value, label } big number. `rows`: [label, value] pairs under it.
  * `showStat`: show the numbers even before this question is answered (carried from an earlier one).
+ * `next`: once answered, one line on what the answer leads to.
  */
-export function SummaryBox({ title, decided, note, stat, rows = [], showStat = false }) {
+export function SummaryBox({ title, decided, note, stat, rows = [], showStat = false, next }) {
   return (
     <aside
       aria-live="polite"
@@ -25,6 +26,7 @@ export function SummaryBox({ title, decided, note, stat, rows = [], showStat = f
       <div className="px-5 py-4">
         {(decided || showStat) && stat ? (
           <>
+            {!decided && note && <p className="mb-3 border-b border-border pb-3 text-sm leading-relaxed text-muted-foreground">{note}</p>}
             <p className="flex items-baseline gap-2">
               <span className="font-condensed text-4xl font-bold tabular-nums text-heading">{stat.value}</span>
               <span className="text-sm font-semibold text-heading">{stat.label}</span>
@@ -39,6 +41,7 @@ export function SummaryBox({ title, decided, note, stat, rows = [], showStat = f
                 ))}
               </dl>
             )}
+            {decided && next && <p className="mt-3 border-t border-info-foreground/15 pt-3 text-sm leading-relaxed text-heading">{next}</p>}
           </>
         ) : (
           <p className="text-sm leading-relaxed text-muted-foreground">{note}</p>

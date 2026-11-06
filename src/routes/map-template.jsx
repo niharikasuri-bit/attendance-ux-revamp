@@ -242,8 +242,15 @@ export default function MapTemplate() {
                 <SummaryBox
                   title="Your selection"
                   decided={selected.length > 0}
-                  note="Users can only be marked in the registers they are added to."
-                  stat={{ value: selected.length, label: selected.length === 1 ? "register" : "registers" }}
+                  note="This decides which registers your users are added to, so they can be marked present or absent there."
+                  stat={{ value: selected.length, label: selected.length === 1 ? "register selected" : "registers selected" }}
+                  next={
+                    step === 0
+                      ? "Your template will have these registers filled in, ready for you to add users."
+                      : enrollment === "Same date for all users"
+                        ? "This start date will be filled in for every user in your template."
+                        : "You will enter a start date for each user in your template."
+                  }
                   rows={
                     step === 0
                       ? (() => {

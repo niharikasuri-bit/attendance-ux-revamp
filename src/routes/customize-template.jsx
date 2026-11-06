@@ -99,10 +99,15 @@ export default function CustomizeTemplate() {
                   showStat={step === 1}
                   note={
                     step === 0
-                      ? "Registers are created for the areas you choose in the boundaries step."
-                      : "Choose how often attendance is taken to see what your registers will have."
+                      ? "This decides which areas get a register, so each supervisor can mark attendance for the workers in their area."
+                      : "This decides how often supervisors mark workers present or absent each day."
                   }
-                  stat={{ value: total, label: total === 1 ? "register" : "registers" }}
+                  stat={{ value: total, label: total === 1 ? "register will be created" : "registers will be created" }}
+                  next={
+                    step === 0
+                      ? "Your template will have one row for each of these registers."
+                      : `Every register in your template will be set to ${frequency === "Twice a day" ? "twice" : "once"} a day.`
+                  }
                   rows={
                     step === 0
                       ? BOUNDARY_LEVELS.filter((l) => levels.includes(l.label)).map((l) => [l.label, String(countOf(l))])
@@ -118,7 +123,7 @@ export default function CustomizeTemplate() {
               <>
                 <h2 className="text-2xl font-bold text-heading">Where will attendance be taken?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Choose the levels where a supervisor marks attendance for their workers. You get one register for each area at these levels.
+                  Choose the levels where a supervisor marks attendance for their workers.
                 </p>
                 <div className="mt-5 grid gap-2 sm:grid-cols-[216px_minmax(0,1fr)] sm:items-center sm:gap-6">
                   <span className="flex items-center gap-1.5">
