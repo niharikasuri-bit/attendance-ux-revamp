@@ -51,7 +51,7 @@ export const FAQS = [
     id: "boundary-level",
     topic: "registers",
     q: "What is a boundary level?",
-    a: "A layer of area, from largest to smallest: State, LGA, Ward and Settlement. When you choose a level, you get one register for each area at that level, for example one register for each ward.",
+    a: "A type of area. Levels go from the largest area to the smallest, and each area sits inside an area at the level above it. When you choose a level, you get one register for each area at that level.",
   },
   {
     id: "session",

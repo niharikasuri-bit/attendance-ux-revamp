@@ -56,6 +56,9 @@ function frequencySummary(label, total) {
   return `You will create ${registersText(total)}. Attendance will be taken ${timesText(sessionsOf(label))} in ${total === 1 ? "that register" : "each one"}.`;
 }
 
+/** "A", "A and B", "A, B and C". */
+const listText = (items) => (items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`);
+
 export default function CustomizeTemplate() {
   const navigate = useNavigate();
   // `?step=N` means we came back from the review page: restore the saved choices.
@@ -139,8 +142,8 @@ export default function CustomizeTemplate() {
                       Boundary level <span className="text-primary">*</span>
                     </label>
                     <InfoTooltip label="What is a boundary level?">
-                      A boundary level is a type of area. State is the largest, then LGA, then Ward, and Settlement is the smallest. Each area sits
-                      inside an area at the level above it.
+                      A boundary level is a type of area. Levels go from the largest area to the smallest, and each area sits inside an area at the
+                      level above it. Here, from largest to smallest: {listText(BOUNDARY_LEVELS.map((l) => l.label))}.
                     </InfoTooltip>
                   </span>
                   <div ref={dropdownRef} className="relative flex-1">
