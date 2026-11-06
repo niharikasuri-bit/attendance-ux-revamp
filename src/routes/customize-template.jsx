@@ -93,8 +93,7 @@ export default function CustomizeTemplate() {
             </div>
           </div>
 
-          <div className="mt-5 rounded-lg border border-border bg-card px-8 py-6">
-            <WithSummary
+          <WithSummary
               summary={
                 step === 0 ? (
                   <PurposeBox
@@ -138,6 +137,7 @@ export default function CustomizeTemplate() {
                 )
               }
             >
+            <div className="rounded-lg border border-border bg-card px-8 py-6">
             {step === 0 && (
               <>
                 <h2 className="text-2xl font-bold text-heading">Where will attendance be taken?</h2>
@@ -223,8 +223,8 @@ export default function CustomizeTemplate() {
                 </div>
               </>
             )}
-            </WithSummary>
-          </div>
+            </div>
+          </WithSummary>
         </div>
       </main>
 

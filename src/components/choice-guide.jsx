@@ -13,7 +13,7 @@ export function SummaryBox({ title, decided, note, stat, rows = [], showStat = f
       aria-live="polite"
       aria-label={title}
       className={`overflow-hidden rounded-xl border transition-colors duration-300 ${
-        decided ? "border-info-foreground/25 bg-info" : "border-border bg-muted/60"
+        decided ? "border-info-foreground/25 bg-info" : "border-border bg-card"
       }`}
     >
       <p
@@ -54,7 +54,7 @@ export function SummaryBox({ title, decided, note, stat, rows = [], showStat = f
 /** Question on the left, summary box on the right (stacked on small screens). */
 export function WithSummary({ summary, children }) {
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8">
+    <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="min-w-0">{children}</div>
       <div className="lg:sticky lg:top-4 lg:self-start">{summary}</div>
     </div>
@@ -71,7 +71,7 @@ export function PurposeBox({ title, decided, why, how, outcome }) {
     <aside
       aria-label={title}
       className={`overflow-hidden rounded-xl border transition-colors duration-300 ${
-        decided ? "border-info-foreground/25 bg-info" : "border-border bg-muted/60"
+        decided ? "border-info-foreground/25 bg-info" : "border-border bg-card"
       }`}
     >
       <p

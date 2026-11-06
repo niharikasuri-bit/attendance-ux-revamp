@@ -236,8 +236,7 @@ export default function MapTemplate() {
             </div>
           </div>
 
-          <div className="mt-5 rounded-lg border border-border bg-card px-8 py-6">
-            <WithSummary
+          <WithSummary
               summary={
                 <SummaryBox
                   title="Your selection"
@@ -263,6 +262,7 @@ export default function MapTemplate() {
                 />
               }
             >
+            <div className="rounded-lg border border-border bg-card px-8 py-6">
             {step === 0 && (
               <>
                 <h2 className="text-2xl font-bold text-heading">Which registers do you want to map users to?</h2>
@@ -315,8 +315,8 @@ export default function MapTemplate() {
                 )}
               </>
             )}
-            </WithSummary>
-          </div>
+            </div>
+          </WithSummary>
         </div>
       </main>
 
