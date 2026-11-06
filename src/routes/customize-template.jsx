@@ -99,7 +99,7 @@ export default function CustomizeTemplate() {
                   <PurposeBox
                     title="About this step"
                     decided={levels.length > 0}
-                    why="This makes sure every supervisor has a register for the area where they mark attendance."
+                    why="Attendance is marked area by area. This step sets which areas get their own register."
                     how="The levels you choose decide how many registers are created."
                     outcome={
                       levels.length
