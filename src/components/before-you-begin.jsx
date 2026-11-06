@@ -135,10 +135,9 @@ function PeopleArt() {
 /* ---------- Content for each flow: what needs to be in place first ---------- */
 
 export const REGISTER_STEPS = {
-  intro: "Before you create attendance registers, please make sure the following are ready for your campaign.",
+  intro: "Before you create attendance registers, please make sure you have the following information handy.",
   steps: [
-    { Art: MapArt, title: "Campaign Boundaries", text: "Boundaries need to be selected for the campaign. Registers are created for these areas." },
-    { Art: FolderArt, title: "Projects", text: "Projects need to be created before registers can be generated." },
+    { Art: MapArt, title: "Attendance Boundaries", text: "The boundaries where attendance will be taken. A register is created for each of these areas." },
     { Art: ClockArt, title: "Attendance Frequency", text: "How many times a day attendance will be taken." },
   ],
 };
@@ -147,7 +146,7 @@ export const MAPPING_STEPS = {
   intro: "Before you map users to registers, please make sure you have the following information handy.",
   steps: [
     { Art: RegistersArt, title: "Attendance Registers", text: "Registers need to be created first. Users are mapped to these registers." },
-    { Art: PeopleArt, title: "Campaign Team", text: "A list of users with their user IDs, names, usernames, and roles." },
+    { Art: PeopleArt, title: "Users", text: "A list of users with their user IDs, names, usernames, and roles." },
     { Art: CalendarArt, title: "Enrollment Dates", text: "The date from which each user can be marked Present or Absent." },
   ],
 };
