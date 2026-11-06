@@ -138,7 +138,7 @@ export const REGISTER_STEPS = {
   intro: "Before you create attendance registers, please make sure you know the following.",
   steps: [
     { Art: MapArt, title: "Boundary Levels", text: "Which boundary levels attendance will be taken at. You get one register for every boundary at these levels." },
-    { Art: ClockArt, title: "Attendance Frequency", text: "Whether attendance will be taken once or twice a day. Every register gets the same number of sessions." },
+    { Art: ClockArt, title: "Attendance Frequency", text: "Whether attendance will be taken once or twice a day. This applies to every register." },
     { Art: UploadArt, title: "Excel Template", text: "You will download an Excel template, fill it in, and upload it. The registers are created from that file." },
   ],
 };

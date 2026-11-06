@@ -42,18 +42,18 @@ function levelEffect(level) {
 }
 
 const sessionsOf = (label) => (label === "Twice a day" ? 2 : 1);
-const sessionsText = (n) => `${n === 1 ? "1 attendance session" : `${n} attendance sessions`} a day`;
+const timesText = (n) => (n === 1 ? "once a day" : "twice a day");
 const registersText = (n) => `${n} ${n === 1 ? "register" : "registers"}`;
 
-/** Before picking: "Each of your 117 registers will have 2 attendance sessions a day". */
+/** Before picking: "Attendance will be taken twice a day in each of your 117 registers". */
 function frequencyEffect(f, total) {
   const n = sessionsOf(f.label);
-  return total === 1 ? `Your register will have ${sessionsText(n)}` : `Each of your ${registersText(total)} will have ${sessionsText(n)}`;
+  return total === 1 ? `Attendance will be taken ${timesText(n)} in your register` : `Attendance will be taken ${timesText(n)} in each of your ${registersText(total)}`;
 }
 
-/** After picking: "You will create 117 registers, each with 2 attendance sessions a day." */
+/** After picking: "You will create 117 registers. Attendance will be taken twice a day in each one." */
 function frequencySummary(label, total) {
-  return `You will create ${registersText(total)}, ${total === 1 ? "with" : "each with"} ${sessionsText(sessionsOf(label))}.`;
+  return `You will create ${registersText(total)}. Attendance will be taken ${timesText(sessionsOf(label))} in ${total === 1 ? "that register" : "each one"}.`;
 }
 
 export default function CustomizeTemplate() {
@@ -188,10 +188,10 @@ export default function CustomizeTemplate() {
               <>
                 <h2 className="text-2xl font-bold text-heading">How many times will attendance be recorded each day?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">Choose how many times attendance will be recorded each day.</p>
-                <ChoiceInfo decided={!!frequency} title={frequency ? "Based on your selection" : "Frequency sets how many sessions each register has"}>
+                <ChoiceInfo decided={!!frequency} title={frequency ? "Based on your selection" : "Frequency decides how often attendance is taken"}>
                   {frequency
                     ? frequencySummary(frequency, total)
-                    : "Every register gets this number of attendance sessions each day."}
+                    : "Attendance will be taken this many times a day in every register."}
                 </ChoiceInfo>
                 <div className="mt-4 space-y-3">
                   {FREQUENCIES.map((f) => (
