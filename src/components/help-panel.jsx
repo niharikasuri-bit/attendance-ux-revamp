@@ -134,7 +134,7 @@ function QuickLinks({ id, items, onGo }) {
   return (
     <section aria-labelledby={`${id}-k`}>
       <h3 id={`${id}-k`} className={SECTION_HEADING}>
-        Quick links
+        Other links
       </h3>
       <ul className="grid grid-cols-3 gap-2">
         {items.map((x) => (
@@ -295,7 +295,7 @@ export function HelpPanel({ id, onClose }) {
             <>
               <section aria-labelledby={`${id}-a`}>
                 <h3 id={`${id}-a`} className={SECTION_HEADING}>
-                  Terminology
+                  FAQs
                 </h3>
                 <QuestionList id={id} topics={terms} openId={openId} onToggle={setOpenId} />
               </section>
