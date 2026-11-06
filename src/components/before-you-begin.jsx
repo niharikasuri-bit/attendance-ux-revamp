@@ -135,21 +135,21 @@ function PeopleArt() {
 /* ---------- Content for each flow: what needs to be in place first ---------- */
 
 export const REGISTER_STEPS = {
-  intro: "Before you create attendance registers, please make sure you know the following.",
+  intro: "Before you create attendance registers, make sure you know:",
   steps: [
-    { Art: MapArt, title: "Boundary Levels", text: "Which boundary levels attendance will be taken at. You get one register for every boundary at these levels." },
-    { Art: ClockArt, title: "Attendance Frequency", text: "Whether attendance will be taken once or twice a day. This applies to every register." },
-    { Art: UploadArt, title: "Excel Template", text: "You will download an Excel template, fill it in, and upload it. The registers are created from that file." },
+    { Art: MapArt, title: "Boundary Levels", text: "The levels where one person marks attendance for their workers." },
+    { Art: ClockArt, title: "Attendance Frequency", text: "How many times a day workers are marked present or absent." },
+    { Art: UploadArt, title: "Excel Template", text: "You fill in a template and upload it to create the registers." },
   ],
 };
 
 export const MAPPING_STEPS = {
-  intro: "Before you map users to registers, please make sure you know the following.",
+  intro: "Before you map users to registers, make sure you know:",
   steps: [
-    { Art: RegistersArt, title: "Attendance Registers", text: "Which registers the users will be added to. Registers need to be created before users can be mapped." },
-    { Art: PeopleArt, title: "Users", text: "The user ID, name, username and role of each user. You will enter these in the template." },
-    { Art: CalendarArt, title: "Enrollment Dates", text: "The date from which each user's attendance will be taken. It can be one date for everyone or a date per user." },
-    { Art: UploadArt, title: "Excel Template", text: "You will download an Excel template, fill it in, and upload it. The users are mapped from that file." },
+    { Art: RegistersArt, title: "Attendance Registers", text: "The registers your users will be added to." },
+    { Art: PeopleArt, title: "Users", text: "Each user's ID, name, username and role." },
+    { Art: CalendarArt, title: "Enrollment Dates", text: "The date each user starts being marked present or absent." },
+    { Art: UploadArt, title: "Excel Template", text: "You fill in a template and upload it to map the users." },
   ],
 };
 
