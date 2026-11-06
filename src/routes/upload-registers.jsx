@@ -66,22 +66,22 @@ export default function UploadRegisters() {
           const count = result ? result.created + result.updated : null;
           return (
             <div className="mt-5 rounded-lg border border-info-foreground/25 bg-info p-5">
-              <p className="text-base font-bold text-heading">Next, add users to {count ? `your ${plural(count, "register")}` : "your registers"}</p>
+              <p className="text-base font-bold text-heading">Next, map users to {count ? `your ${plural(count, "register")}` : "your registers"}</p>
               <p className="mt-1 text-sm leading-relaxed text-foreground">
-                Your registers are ready, but they have no users yet. Add the users who will be marked in each register so supervisors can start
+                Your registers are ready, but they have no users yet. Map the users who will be marked in each register so supervisors can start
                 taking attendance.
               </p>
               <Link
                 to="/attendance/map-template?preselect=latest"
                 className="mt-4 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:brightness-95"
               >
-                <UserPlus className="size-4" aria-hidden="true" /> Add Users to Registers
+                <UserPlus className="size-4" aria-hidden="true" /> Map Users to Register
               </Link>
             </div>
           );
         },
       }}
-      successFooter={{ againLabel: "Create Another Register", nextLabel: "Add Users to Registers", nextTo: "/attendance/map-template?preselect=latest" }}
+      successFooter={{ againLabel: "Create Another Register", nextLabel: "Map Users to Register", nextTo: "/attendance/map-template?preselect=latest" }}
     />
   );
 }

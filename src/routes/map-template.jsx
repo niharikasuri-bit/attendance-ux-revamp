@@ -246,7 +246,7 @@ export default function MapTemplate() {
                     how="Once mapped to a register a supervisor, frontline worker, marker, or proximity supervisor belongs to that register’s boundaries."
                     outcome={
                       selected.length
-                        ? `${plural(selected.length, "register")} selected. You'll add users to ${selected.length === 1 ? "this register" : "these registers"} in your template.`
+                        ? `${plural(selected.length, "register")} selected. You'll map users to ${selected.length === 1 ? "this register" : "these registers"} in your template.`
                         : null
                     }
                   />

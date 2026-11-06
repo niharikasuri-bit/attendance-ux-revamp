@@ -145,12 +145,12 @@ export const REGISTER_STEPS = {
 };
 
 export const MAPPING_STEPS = {
-  intro: "You'll add users to the attendance registers so they can be marked present or absent. It only takes four simple steps:",
+  intro: "You'll map users to the attendance registers so they can be marked present or absent. It only takes four simple steps:",
   steps: [
-    { Art: RegistersArt, title: "Pick the Registers", text: "Choose the attendance registers you want to add users to." },
+    { Art: RegistersArt, title: "Pick the Registers", text: "Choose the attendance registers you want to map users to." },
     { Art: CalendarArt, title: "Pick a Start Date", text: "Choose the date from which users can be marked present or absent." },
     { Art: SheetArt, title: "Download the File", text: "Check your choices and download an Excel file with your registers already filled in." },
-    { Art: PeopleArt, title: "Add Users and Upload", text: "Add each user's name, ID and username in Excel, then upload the file here. They are added to the registers from it." },
+    { Art: PeopleArt, title: "Map Users and Upload", text: "Fill in each user's name, ID and username in Excel, then upload the file here. They are mapped to the registers from it." },
   ],
 };
 
