@@ -60,3 +60,34 @@ export function WithSummary({ summary, children }) {
     </div>
   );
 }
+
+/**
+ * Box that always answers three things, one line each, with no headings:
+ * why this step matters, how the choice affects what comes next, and what will happen.
+ * Grey until something is chosen; then blue, with the outcome line in bold.
+ */
+export function PurposeBox({ title, decided, why, how, outcome }) {
+  return (
+    <aside
+      aria-label={title}
+      className={`overflow-hidden rounded-xl border transition-colors duration-300 ${
+        decided ? "border-info-foreground/25 bg-info" : "border-border bg-muted/60"
+      }`}
+    >
+      <p
+        className={`border-b px-5 py-3 text-xs font-bold uppercase tracking-wide transition-colors duration-300 ${
+          decided ? "border-info-foreground/15 text-info-foreground" : "border-border text-muted-foreground"
+        }`}
+      >
+        {title}
+      </p>
+      <div className={`divide-y px-5 ${decided ? "divide-info-foreground/15" : "divide-border"}`}>
+        <p className={`py-3 text-sm leading-relaxed ${decided ? "text-heading" : "text-muted-foreground"}`}>{why}</p>
+        <p className={`py-3 text-sm leading-relaxed ${decided ? "text-heading" : "text-muted-foreground"}`}>{how}</p>
+        <p aria-live="polite" className={`py-3 leading-relaxed ${decided ? "text-base font-bold text-heading" : "text-sm text-muted-foreground"}`}>
+          {outcome}
+        </p>
+      </div>
+    </aside>
+  );
+}
