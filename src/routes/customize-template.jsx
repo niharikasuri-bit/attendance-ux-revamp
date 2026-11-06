@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ChevronDown, ChevronUp, Lightbulb, ListChecks } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioDot, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -53,22 +53,18 @@ function frequencySummary(label, total) {
   return `You will create ${registersText(total)}, ${total === 1 ? "with" : "each with"} ${sessionsText(sessionsOf(label))}.`;
 }
 
-/** Neutral info box: explains what the choice decides, then what the chosen answer creates. */
+/** Info box: explains what the choice decides, then (in the selected colour) what the answer creates. */
 function ChoiceInfo({ decided, title, children }) {
-  const Icon = decided ? ListChecks : Lightbulb;
   return (
     <div
       aria-live="polite"
-      className="relative mt-5 flex items-start gap-3.5 overflow-hidden rounded-lg border border-border bg-gradient-to-r from-muted/80 via-card to-card py-4 pl-6 pr-5"
+      className={`relative mt-4 overflow-hidden rounded-lg border py-3.5 pl-6 pr-5 transition-colors duration-300 ${
+        decided ? "border-primary/40 bg-selected-bg" : "border-border bg-gradient-to-r from-muted/80 via-card to-card"
+      }`}
     >
-      <span className="absolute inset-y-0 left-0 w-1 bg-foreground/70" aria-hidden="true" />
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-card shadow-sm">
-        <Icon className="size-4 text-foreground" aria-hidden="true" />
-      </span>
-      <span className="min-w-0 pt-0.5">
-        <span className="block text-sm font-semibold text-foreground">{title}</span>
-        <span className={`mt-0.5 block text-sm ${decided ? "font-medium text-foreground" : "text-muted-foreground"}`}>{children}</span>
-      </span>
+      <span className={`absolute inset-y-0 left-0 w-1 transition-colors duration-300 ${decided ? "bg-primary" : "bg-foreground/60"}`} aria-hidden="true" />
+      <span className="block text-sm font-semibold text-heading">{title}</span>
+      <span className={`mt-0.5 block text-sm ${decided ? "font-medium text-foreground" : "text-muted-foreground"}`}>{children}</span>
     </div>
   );
 }
@@ -139,6 +135,16 @@ export default function CustomizeTemplate() {
                 <p className="mt-1 text-sm text-muted-foreground">
                   Select one or more boundary levels from the dropdown below. We'll create a register for every boundary at the levels you select.
                 </p>
+                {levels.length ? (
+                  <ChoiceInfo decided title="Based on your selection">
+                    {registersSummary(levels)}
+                  </ChoiceInfo>
+                ) : (
+                  <ChoiceInfo title="Boundary levels decide how many registers you get">
+                    There are 4 levels: State, LGA, Ward and Settlement. A register is created for every boundary at each level you select, so lower
+                    levels give you more, smaller registers.
+                  </ChoiceInfo>
+                )}
                 <div className="mt-5 grid gap-2 sm:grid-cols-[216px_minmax(0,1fr)] sm:items-center sm:gap-6">
                   <label className="text-sm font-bold text-foreground">
                     Boundary level <span className="text-primary">*</span>
@@ -186,16 +192,6 @@ export default function CustomizeTemplate() {
                     )}
                   </div>
                 </div>
-                {levels.length ? (
-                  <ChoiceInfo decided title="Based on your selection">
-                    {registersSummary(levels)}
-                  </ChoiceInfo>
-                ) : (
-                  <ChoiceInfo title="Boundary levels decide how many registers you get">
-                    There are 4 levels: State, LGA, Ward and Settlement. A register is created for every boundary at each level you select, so lower
-                    levels give you more, smaller registers.
-                  </ChoiceInfo>
-                )}
               </>
             )}
 
@@ -203,6 +199,16 @@ export default function CustomizeTemplate() {
               <>
                 <h2 className="text-2xl font-bold text-heading">How many times will attendance be recorded each day?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">Choose how many times attendance will be recorded each day.</p>
+                {frequency ? (
+                  <ChoiceInfo decided title="Based on your selection">
+                    {frequencySummary(frequency, total)}
+                  </ChoiceInfo>
+                ) : (
+                  <ChoiceInfo title="Frequency decides how many sessions each register has">
+                    Each time attendance is recorded in a day is one session. Every register gets the same number of sessions, and workers are marked
+                    present or absent in each one.
+                  </ChoiceInfo>
+                )}
                 <div className="mt-4 space-y-3">
                   {FREQUENCIES.map((f) => (
                     <button
@@ -222,16 +228,6 @@ export default function CustomizeTemplate() {
                     </button>
                   ))}
                 </div>
-                {frequency ? (
-                  <ChoiceInfo decided title="Based on your selection">
-                    {frequencySummary(frequency, total)}
-                  </ChoiceInfo>
-                ) : (
-                  <ChoiceInfo title="Frequency decides how many sessions each register has">
-                    Each time attendance is recorded in a day is one session. Every register gets the same number of sessions, and workers are marked
-                    present or absent in each one.
-                  </ChoiceInfo>
-                )}
               </>
             )}
           </div>
