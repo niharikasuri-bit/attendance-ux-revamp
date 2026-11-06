@@ -31,6 +31,50 @@ const TASKS = [
   { icon: ListChecks, title: "Define Checklists", description: DELIVERY_COPY, action: "Define Checklists", disabled: true },
 ];
 
+/** Grey uppercase label with a rule running to the right. */
+function SectionHeading({ children }) {
+  return (
+    <h2 className="mb-3 mt-6 flex items-center gap-4 text-sm font-bold uppercase tracking-wide text-muted-foreground">
+      <span className="shrink-0">{children}</span>
+      <span aria-hidden="true" className="h-px flex-1 bg-border" />
+    </h2>
+  );
+}
+
+function TaskList({ tasks }) {
+  return (
+    <div className="space-y-3">
+      {tasks.map((task) => {
+        const buttonClass = `w-[190px] shrink-0 rounded-sm px-4 py-2 text-center text-xs font-medium transition-colors ${
+          task.disabled ? "cursor-not-allowed bg-muted text-muted-foreground" : "bg-primary text-primary-foreground hover:brightness-95"
+        }`;
+        return (
+          <section key={task.title} className={`rounded-sm border border-border bg-card px-5 py-4 ${task.disabled ? "opacity-70" : ""}`}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <task.icon className={`size-6 shrink-0 ${task.disabled ? "text-muted-foreground" : "text-primary"}`} strokeWidth={1.75} />
+                <h3 className={`text-base font-bold ${task.disabled ? "text-muted-foreground" : "text-heading"}`}>{task.title}</h3>
+              </div>
+              {task.disabled ? (
+                <button disabled className={buttonClass}>
+                  {task.action}
+                </button>
+              ) : task.to ? (
+                <Link to={task.to} className={buttonClass}>
+                  {task.action}
+                </Link>
+              ) : (
+                <button className={buttonClass}>{task.action}</button>
+              )}
+            </div>
+            <p className="mt-3 max-w-4xl text-xs leading-relaxed text-muted-foreground">{task.description}</p>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
 export default function CampaignSetup() {
   return (
     <AppShell>
@@ -62,35 +106,11 @@ export default function CampaignSetup() {
             edit these details anytime before the campaign begins.
           </p>
 
-          <div className="mt-5 space-y-3">
-            {TASKS.map((task) => {
-              const buttonClass = `w-[190px] shrink-0 rounded-sm px-4 py-2 text-center text-xs font-medium transition-colors ${
-                task.disabled ? "cursor-not-allowed bg-muted text-muted-foreground" : "bg-primary text-primary-foreground hover:brightness-95"
-              }`;
-              return (
-                <section key={task.title} className={`rounded-sm border border-border bg-card px-5 py-4 ${task.disabled ? "opacity-70" : ""}`}>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <task.icon className={`size-6 shrink-0 ${task.disabled ? "text-muted-foreground" : "text-primary"}`} strokeWidth={1.75} />
-                      <h2 className={`text-base font-bold ${task.disabled ? "text-muted-foreground" : "text-heading"}`}>{task.title}</h2>
-                    </div>
-                    {task.disabled ? (
-                      <button disabled className={buttonClass}>
-                        {task.action}
-                      </button>
-                    ) : task.to ? (
-                      <Link to={task.to} className={buttonClass}>
-                        {task.action}
-                      </Link>
-                    ) : (
-                      <button className={buttonClass}>{task.action}</button>
-                    )}
-                  </div>
-                  <p className="mt-3 max-w-4xl text-xs leading-relaxed text-muted-foreground">{task.description}</p>
-                </section>
-              );
-            })}
-          </div>
+          <SectionHeading>Post Campaign Setup</SectionHeading>
+          <TaskList tasks={TASKS.filter((t) => t.to === "/attendance")} />
+
+          <SectionHeading>Your Campaign Configuration</SectionHeading>
+          <TaskList tasks={TASKS.filter((t) => t.to !== "/attendance")} />
         </div>
       </main>
     </AppShell>
