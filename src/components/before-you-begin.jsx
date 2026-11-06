@@ -137,19 +137,19 @@ function PeopleArt() {
 export const REGISTER_STEPS = {
   intro: "Before you create attendance registers, please make sure you have the following information handy.",
   steps: [
-    { Art: MapArt, title: "Boundary Levels", text: "The boundary levels where attendance will be taken. A register is created for every boundary at these levels." },
-    { Art: ClockArt, title: "Attendance Frequency", text: "How many times a day attendance will be taken." },
-    { Art: UploadArt, title: "Excel Upload", text: "You'll download an Excel template, fill it in, and upload it to create the registers." },
+    { Art: MapArt, title: "Boundary Levels", text: "The boundary levels where attendance will be taken." },
+    { Art: ClockArt, title: "Attendance Frequency", text: "The number of times attendance will be taken each day." },
+    { Art: UploadArt, title: "Excel Template", text: "The template you download, fill in and upload to create the registers." },
   ],
 };
 
 export const MAPPING_STEPS = {
   intro: "Before you map users to registers, please make sure you have the following information handy.",
   steps: [
-    { Art: RegistersArt, title: "Attendance Registers", text: "Registers need to be created first. Users are mapped to these registers." },
-    { Art: PeopleArt, title: "Users", text: "A list of users with their user IDs, names, usernames, and roles." },
-    { Art: CalendarArt, title: "Enrollment Dates", text: "The date from which each user can be marked Present or Absent." },
-    { Art: UploadArt, title: "Excel Upload", text: "You'll download an Excel template, add your users, and upload it to map them to registers." },
+    { Art: RegistersArt, title: "Attendance Registers", text: "The registers you want to map users to." },
+    { Art: PeopleArt, title: "Users", text: "The user ID, name, username and role of each user." },
+    { Art: CalendarArt, title: "Enrollment Dates", text: "The date from which each user's attendance will be taken." },
+    { Art: UploadArt, title: "Excel Template", text: "The template you download, fill in and upload to map the users." },
   ],
 };
 
