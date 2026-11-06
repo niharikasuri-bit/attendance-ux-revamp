@@ -139,7 +139,6 @@ export const REGISTER_STEPS = {
   steps: [
     { Art: MapArt, title: "Where Attendance Is Taken", text: "The areas where one person marks attendance for their workers." },
     { Art: ClockArt, title: "How Often", text: "How many times a day workers are marked present or absent." },
-    { Art: UploadArt, title: "Excel Template", text: "You fill in a template and upload it to create the registers." },
   ],
 };
 
@@ -149,7 +148,6 @@ export const MAPPING_STEPS = {
     { Art: RegistersArt, title: "Registers", text: "The registers your users will be added to." },
     { Art: PeopleArt, title: "Users", text: "Each user's ID, name, username and role." },
     { Art: CalendarArt, title: "Start Dates", text: "The date each user starts being marked present or absent." },
-    { Art: UploadArt, title: "Excel Template", text: "You fill in a template and upload it to add the users." },
   ],
 };
 
