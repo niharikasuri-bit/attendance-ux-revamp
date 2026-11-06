@@ -135,9 +135,9 @@ function PeopleArt() {
 /* ---------- Content for each flow: what needs to be in place first ---------- */
 
 export const REGISTER_STEPS = {
-  intro: "You'll set up the sheets where workers are marked present or absent. It only takes four simple steps:",
+  intro: "You'll set up the registers where workers are marked present or absent. It only takes four simple steps:",
   steps: [
-    { Art: MapArt, title: "Pick the Areas", text: "Choose the areas where attendance will be taken. Each area gets its own sheet." },
+    { Art: MapArt, title: "Pick the Areas", text: "Choose the areas where attendance will be taken. Each area gets its own register." },
     { Art: ClockArt, title: "Pick How Often", text: "Choose if workers are marked present or absent once or twice a day." },
     { Art: SheetArt, title: "Download the File", text: "Check your choices and download the Excel file made for you." },
     { Art: UploadArt, title: "Fill It In and Upload", text: "Add the missing details in Excel, then upload the file here." },
@@ -145,9 +145,9 @@ export const REGISTER_STEPS = {
 };
 
 export const MAPPING_STEPS = {
-  intro: "You'll add people to the attendance sheets so they can be marked present or absent. It only takes four simple steps:",
+  intro: "You'll add people to the attendance registers so they can be marked present or absent. It only takes four simple steps:",
   steps: [
-    { Art: RegistersArt, title: "Pick the Sheets", text: "Choose the attendance sheets you want to add people to." },
+    { Art: RegistersArt, title: "Pick the Registers", text: "Choose the attendance registers you want to add people to." },
     { Art: CalendarArt, title: "Pick a Start Date", text: "Choose the date from which people can be marked present or absent." },
     { Art: SheetArt, title: "Download the File", text: "Check your choices and download the Excel file made for you." },
     { Art: PeopleArt, title: "Add People and Upload", text: "Add each person's details in Excel, then upload the file here." },
