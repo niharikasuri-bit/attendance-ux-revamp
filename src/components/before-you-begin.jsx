@@ -158,33 +158,33 @@ export const MAPPING_STEPS = {
 export function BeforeYouBegin({ open, onClose, content }) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="font-sans flex max-h-[90vh] max-w-md flex-col gap-0 bg-white p-0 sm:rounded-xl [&>button:last-child]:right-6 [&>button:last-child]:top-6 [&>button:last-child>svg]:size-6">
-        <div className="border-b border-border px-6 pb-5 pt-7 sm:px-8">
-          <DialogTitle className="font-sans text-[2rem] font-bold leading-tight text-heading">Here's what you'll do</DialogTitle>
+      <DialogContent className="font-sans flex max-h-[90vh] max-w-md flex-col gap-0 bg-white p-0 sm:rounded-xl [&>button:last-child]:right-5 [&>button:last-child]:top-5 [&>button:last-child>svg]:size-5">
+        <div className="border-b border-border px-6 pb-4 pt-6">
+          <DialogTitle className="font-sans text-xl font-bold leading-tight text-heading">Here's what you'll do</DialogTitle>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5 sm:px-8">
-          <DialogDescription className="text-base leading-relaxed text-foreground/80">{content.intro}</DialogDescription>
-          <ul className="mt-2">
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-4">
+          <DialogDescription className="text-sm leading-relaxed text-foreground/80">{content.intro}</DialogDescription>
+          <ul className="mt-1">
             {content.steps.map(({ Art, title, text }) => (
-              <li key={title} className="flex items-center gap-4 border-b border-border py-5 last:border-0 sm:gap-6">
-                <span className="h-14 w-[84px] shrink-0 sm:h-20 sm:w-[120px]" aria-hidden="true">
+              <li key={title} className="flex items-center gap-4 border-b border-border py-3 last:border-0">
+                <span className="h-10 w-[60px] shrink-0" aria-hidden="true">
                   <Art />
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-sans text-xl font-bold leading-tight text-heading sm:text-2xl">
+                  <span className="block font-sans text-sm font-bold leading-tight text-heading">
                                         {title}
                   </span>
-                  <span className="mt-1 block text-base leading-snug text-foreground/80">{text}</span>
+                  <span className="mt-0.5 block text-xs leading-snug text-foreground/80">{text}</span>
                 </span>
               </li>
             ))}
           </ul>
         </div>
-        <div className="border-t border-border px-6 py-5 sm:px-8">
+        <div className="border-t border-border px-6 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="w-full rounded-md bg-primary px-6 py-3 text-lg font-semibold text-primary-foreground outline-none transition-colors hover:brightness-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="w-full rounded-md bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground outline-none transition-colors hover:brightness-95 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Continue
           </button>

@@ -255,7 +255,7 @@ export default function MapTemplate() {
                     title="About this step"
                     decided
                     why="Users can only be marked present or absent from a certain date onward, so an enrollment date needs to be set for each user."
-                    how="The enrollment date decides when each user starts being marked present or absent. A different date means setting it separately for every user on each tab."
+                    how="The enrollment date decides when each user starts being marked present or absent. A different date means setting it separately for every user on each tab (Frontline Workers: the people whose attendance is marked; Attendance Markers: the people who mark it; Attendance Approvers: the people who check and approve it)."
                     outcome={
                       enrollment === "Same date for all users"
                         ? `Users in ${selected.length === 1 ? "this register" : `these ${selected.length} registers`} can be marked from ${prettyDate(enrollmentDate)}.`
