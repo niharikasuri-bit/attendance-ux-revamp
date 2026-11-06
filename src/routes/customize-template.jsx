@@ -1,64 +1,66 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioDot, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
+import { CarriedAnswer, ResultLine, SAVED_NOTE, WhatHappens, auditNote, listText, plural } from "@/components/consequence";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { attendanceActions, getState } from "@/lib/attendance-store";
-import { BoundaryImpact, FrequencyImpact } from "@/components/choice-impact";
 import { hasGeneratedRegisters } from "./attendance-home";
 
 export const BOUNDARY_LEVELS = [
-  { label: "State", count: "1 state" },
-  { label: "LGA", count: "6 LGAs" },
-  { label: "Ward", count: "14 wards" },
-  { label: "Settlement", count: "96 settlements" },
+  { label: "State", count: "1 state", unit: "state", hint: "Fewest, largest registers" },
+  { label: "LGA", count: "6 LGAs", unit: "LGA", hint: "Fewer, larger registers" },
+  { label: "Ward", count: "14 wards", unit: "ward", hint: "Mid-sized registers" },
+  { label: "Settlement", count: "96 settlements", unit: "settlement", hint: "Most, smallest registers" },
 ];
 
 export const FREQUENCIES = [
-  { label: "Once a day", chip: "One register with a single attendance session" },
-  { label: "Twice a day", chip: "One register with multiple attendance sessions" },
+  { label: "Once a day", chip: "One register with a single attendance session", sessions: 1 },
+  { label: "Twice a day", chip: "One register with multiple attendance sessions", sessions: 2 },
 ];
+
+const countOf = (level) => parseInt(level.count, 10) || 0;
+
+/** How many registers the chosen levels create, and a per-level breakdown. */
+function registerTotals(levels) {
+  const chosen = BOUNDARY_LEVELS.filter((l) => levels.includes(l.label));
+  const total = chosen.reduce((sum, l) => sum + countOf(l), 0);
+  const perLevel = chosen.length === 1 ? `one per ${chosen[0].unit}` : listText(chosen.map((l) => `${countOf(l)} for ${l.label}`));
+  return { total, perLevel };
+}
+
+const AUDIT = auditNote("Downloading the template and creating registers are recorded with your name and the time.");
 
 export default function CustomizeTemplate() {
   const navigate = useNavigate();
   // `?step=N` means we came back from the review page: restore the saved choices.
   const [params] = useSearchParams();
   const resuming = params.get("step") !== null;
-  const [step, setStep] = useState(() => (resuming && params.get("step") === "1" ? 1 : 0));
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef(null);
-  const [levels, setLevels] = useState(() => (resuming ? getState().templateLevels : []));
-  const [frequency, setFrequency] = useState(() => (resuming ? getState().templateFrequency : null));
+  // Otherwise pick up answers left in progress.
+  const [draft] = useState(() => (resuming ? null : getState().registerDraft));
+  const [step, setStep] = useState(() => (resuming ? (params.get("step") === "1" ? 1 : 0) : draft?.step ?? 0));
+  const [levels, setLevels] = useState(() => (resuming ? getState().templateLevels : draft?.levels ?? []));
+  const [frequency, setFrequency] = useState(() => (resuming ? getState().templateFrequency : draft?.frequency ?? null));
 
   useEffect(() => {
-    if (!open) return;
-    const onPointer = (e) => {
-      if (!dropdownRef.current?.contains(e.target)) setOpen(false);
-    };
-    const onKey = (e) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    document.addEventListener("pointerdown", onPointer);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("pointerdown", onPointer);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+    attendanceActions.saveRegisterDraft({ step, levels, frequency });
+  }, [step, levels, frequency]);
 
   const allSelected = levels.length === BOUNDARY_LEVELS.length;
   const toggleLevel = (label) => setLevels((prev) => (prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]));
   const canContinue = step === 0 ? levels.length > 0 : !!frequency;
+  const { total, perLevel } = registerTotals(levels);
+  const sessions = FREQUENCIES.find((f) => f.label === frequency)?.sessions;
 
   // Registers already exist for every boundary level, so picking all of them can't create new ones.
   const [existsAlertOpen, setExistsAlertOpen] = useState(false);
-
 
   const next = () => {
     // First-time users haven't uploaded any registers yet, so nothing can already exist for them.
     if (step === 0) return allSelected && hasGeneratedRegisters() ? setExistsAlertOpen(true) : setStep(1);
     attendanceActions.setRegisterTemplateOptions({ levels, frequency });
+    // The answers now live with the review page (Back returns to them), so drop the in-progress copy.
+    attendanceActions.saveRegisterDraft(null);
     navigate("/attendance/register-summary");
   };
 
@@ -83,53 +85,67 @@ export default function CustomizeTemplate() {
               <>
                 <h2 className="text-2xl font-bold text-heading">What boundary levels are you generating registers for?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Select one or more boundary levels from the dropdown below. We'll create a register for every boundary at the levels you select.
+                  Select one or more boundary levels. We'll create a register for every boundary at the levels you select.
                 </p>
-                <div className="mt-5 grid gap-2 sm:grid-cols-[216px_minmax(0,1fr)] sm:items-center sm:gap-6">
-                  <label className="text-sm font-bold text-foreground">
-                    Boundary level <span className="text-primary">*</span>
-                  </label>
-                  <div ref={dropdownRef} className="relative flex-1">
+                <fieldset className="mt-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <legend className="text-sm font-bold text-foreground">
+                      Boundary level <span className="text-primary">*</span>
+                    </legend>
                     <button
                       type="button"
-                      onClick={() => setOpen((o) => !o)}
-                      aria-expanded={open}
-                      className={`flex w-full items-center justify-between rounded-md border bg-card px-3 py-2.5 text-left text-sm ${
-                        open ? "border-primary" : "border-input"
-                      }`}
+                      role="checkbox"
+                      aria-checked={allSelected ? "true" : levels.length ? "mixed" : "false"}
+                      onClick={() => setLevels(allSelected ? [] : BOUNDARY_LEVELS.map((l) => l.label))}
+                      className="flex items-center gap-2 text-sm font-semibold text-primary"
                     >
-                      <span className={levels.length ? "text-foreground" : "text-muted-foreground"}>
-                        {levels.length ? levels.join(", ") : "Select boundary levels..."}
-                      </span>
-                      {open ? <ChevronUp className="size-4 text-muted-foreground" /> : <ChevronDown className="size-4 text-muted-foreground" />}
+                      <Checkbox checked={allSelected} indeterminate={levels.length > 0 && !allSelected} />
+                      Select All
                     </button>
-                    {open && (
-                      <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-md border border-border bg-card shadow-lg">
-                        <button
-                          type="button"
-                          onClick={() => setLevels(allSelected ? [] : BOUNDARY_LEVELS.map((l) => l.label))}
-                          className="flex w-full items-center gap-3 border-b border-border px-3 py-2.5 text-left hover:bg-muted"
-                        >
-                          <Checkbox checked={allSelected} size="size-4.5" />
-                          <span className="text-sm font-semibold text-primary">Select All</span>
-                        </button>
-                        {BOUNDARY_LEVELS.map((level) => (
-                          <button
-                            key={level.label}
-                            type="button"
-                            onClick={() => toggleLevel(level.label)}
-                            className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-muted"
-                          >
-                            <Checkbox checked={levels.includes(level.label)} size="size-4.5" />
-                            <span className="text-sm font-semibold text-foreground">{level.label}</span>
-                            <span className="ml-auto text-xs text-muted-foreground">{level.count}</span>
-                          </button>
-                        ))}
-                      </div>
-                    )}
                   </div>
-                </div>
-                <BoundaryImpact levels={levels} options={BOUNDARY_LEVELS} />
+                  <div className="mt-3 grid gap-3 md:grid-cols-2">
+                    {BOUNDARY_LEVELS.map((level) => {
+                      const on = levels.includes(level.label);
+                      return (
+                        <button
+                          key={level.label}
+                          type="button"
+                          role="checkbox"
+                          aria-checked={on}
+                          onClick={() => toggleLevel(level.label)}
+                          className={`flex w-full items-center gap-3 rounded-md border p-4 text-left transition-colors ${
+                            on ? "border-primary bg-selected-bg" : "border-border bg-info-bg hover:border-muted-foreground/30"
+                          }`}
+                        >
+                          <Checkbox checked={on} size="size-4.5" />
+                          <span className="min-w-0 flex-1">
+                            <span className="block text-sm font-bold text-heading">{level.label}</span>
+                            <span className="mt-0.5 block text-xs text-muted-foreground">{level.hint}</span>
+                          </span>
+                          <span className={`shrink-0 text-right text-sm ${on ? "font-semibold text-heading" : "text-muted-foreground"}`}>{level.count}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+                {total > 0 ? (
+                  <ResultLine>
+                    You will create {plural(total, "register")}, {perLevel}.
+                  </ResultLine>
+                ) : (
+                  <ResultLine muted>Select a boundary level to see how many registers you will create.</ResultLine>
+                )}
+                <WhatHappens
+                  notes={[
+                    SAVED_NOTE,
+                    {
+                      kind: "effect",
+                      title: "Nothing is created yet",
+                      text: "Registers are created only when you upload the filled template. Until then you can change these answers.",
+                    },
+                    AUDIT,
+                  ]}
+                />
               </>
             )}
 
@@ -137,25 +153,52 @@ export default function CustomizeTemplate() {
               <>
                 <h2 className="text-2xl font-bold text-heading">How many times will attendance be recorded each day?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">Choose how many times attendance will be recorded each day.</p>
+                <CarriedAnswer changeLabel="Change boundary levels" onChange={() => setStep(0)}>
+                  You chose {listText(levels)}: {plural(total, "register")}.
+                </CarriedAnswer>
                 <div className="mt-4 space-y-3">
                   {FREQUENCIES.map((f) => (
                     <button
                       key={f.label}
                       type="button"
+                      role="radio"
+                      aria-checked={frequency === f.label}
                       onClick={() => setFrequency(f.label)}
                       className={`flex w-full items-start gap-3 rounded-md border p-4 text-left transition-colors ${
                         frequency === f.label ? "border-primary bg-selected-bg" : "border-border bg-info-bg hover:border-muted-foreground/30"
                       }`}
                     >
                       <RadioDot selected={frequency === f.label} />
-                      <span>
+                      <span className="min-w-0 flex-1">
                         <span className="block text-sm font-bold text-heading">{f.label}</span>
                         <span className="mt-1.5 inline-block rounded-xs bg-chip px-2 py-1 text-[11px] font-semibold text-heading">{f.chip}</span>
+                        <span className="mt-1.5 block text-xs text-muted-foreground sm:hidden">{plural(f.sessions, "session")} per register</span>
+                      </span>
+                      <span className={`hidden shrink-0 text-right text-sm sm:block ${frequency === f.label ? "font-semibold text-heading" : "text-muted-foreground"}`}>
+                        {plural(f.sessions, "session")} per register
                       </span>
                     </button>
                   ))}
                 </div>
-                <FrequencyImpact frequency={frequency} />
+                {sessions ? (
+                  <ResultLine>
+                    You will create {plural(total, "register")}, {plural(sessions, "session")} each. Workers are marked present or absent{" "}
+                    {sessions === 1 ? "once" : "twice"} a day.
+                  </ResultLine>
+                ) : (
+                  <ResultLine muted>Choose how often to see what each register will have.</ResultLine>
+                )}
+                <WhatHappens
+                  notes={[
+                    SAVED_NOTE,
+                    {
+                      kind: "effect",
+                      title: "You can adjust one register",
+                      text: "Every register gets this number of sessions. If one register needs a different number, change its Sessions in the template before you upload.",
+                    },
+                    AUDIT,
+                  ]}
+                />
               </>
             )}
           </div>

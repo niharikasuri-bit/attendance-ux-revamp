@@ -21,6 +21,9 @@ const EMPTY = {
   templateLevels: [],
   templateFrequency: null,
   auditLog: [],
+  // Answers in progress on the question screens, so people can leave and pick up where they left off.
+  registerDraft: null,
+  mappingDraft: null,
 };
 
 let state = EMPTY;
@@ -170,6 +173,16 @@ export const attendanceActions = {
         details: `Register deleted from Manage Registers${r.users ? ` with ${r.users} mapped ${r.users === 1 ? "user" : "users"}` : ""}`,
       })),
     );
+  },
+
+  /** Saves (or clears, with null) the answers in progress on the register questions. */
+  saveRegisterDraft(draft) {
+    setState({ registerDraft: draft });
+  },
+
+  /** Saves (or clears, with null) the answers in progress on the user mapping questions. */
+  saveMappingDraft(draft) {
+    setState({ mappingDraft: draft });
   },
 
   setMappingRegisters(ids) {

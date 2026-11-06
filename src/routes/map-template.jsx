@@ -1,11 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Loader, usePageLoading } from "@/components/loader";
 import { ChevronLeft, Info, Search, X } from "lucide-react";
 import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioCard, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { attendanceActions, getRegisters, getState, useAttendanceStore } from "@/lib/attendance-store";
-import { EnrollmentImpact, RegisterMappingImpact } from "@/components/choice-impact";
+import { CarriedAnswer, ResultLine, SAVED_NOTE, WhatHappens, auditNote, listText } from "@/components/consequence";
 
 // Steps: 0 registers, 1 enrollment date.
 const LAST_STEP = 1;
@@ -175,7 +175,11 @@ export default function MapTemplate() {
   // `?step=N` means we came back from the review page: restore the saved choices.
   const stepParam = params.get("step");
   const resuming = stepParam !== null;
-  const saved = resuming ? getState().mappingOptions : null;
+  // URL choices (from Manage Registers, View Register or a fresh upload) start a new mapping;
+  // otherwise pick up answers left in progress.
+  const fromUrl = ["registers", "register", "preselect"].some((k) => params.has(k));
+  const [draft] = useState(() => (resuming || fromUrl ? null : getState().mappingDraft));
+  const saved = resuming ? getState().mappingOptions : draft;
 
   // Otherwise preselect the registers just uploaded, or the one we came from on View Register.
   const [newIds] = useState(() => {
@@ -187,7 +191,7 @@ export default function MapTemplate() {
     if (resuming) return getState().mappingIds;
     // `?register=` (from View Register) or `?registers=a,b` (bulk action on Manage Registers).
     const ids = (params.get("registers") ?? params.get("register") ?? "").split(",").filter(Boolean);
-    return ids.length ? ids : newIds;
+    return ids.length ? ids : newIds.length ? newIds : draft?.selected ?? [];
   });
 
   // Every register on Manage Registers is listed, except the few that already have enrollment
@@ -199,16 +203,31 @@ export default function MapTemplate() {
   const [noticeOpen, setNoticeOpen] = useState(true);
 
   const loading = usePageLoading();
-  const [step, setStep] = useState(() => Math.min(Math.max(Number(stepParam) || 0, 0), LAST_STEP));
+  const [step, setStep] = useState(() => Math.min(Math.max(Number(stepParam ?? draft?.step) || 0, 0), LAST_STEP));
   // Older saved choices used "Set per user" for the per-user option.
   const [enrollment, setEnrollment] = useState(() => (saved?.enrollment === "Set per user" ? PER_USER : saved?.enrollment ?? PER_USER));
   const [enrollmentDate, setEnrollmentDate] = useState(saved?.enrollmentDate ?? "2026-02-12");
   const canContinue = step === 0 ? selected.length > 0 : !!enrollment;
+  const sameDate = enrollment === "Same date for all users";
+
+  useEffect(() => {
+    attendanceActions.saveMappingDraft({ step, selected, enrollment, enrollmentDate });
+  }, [step, selected, enrollment, enrollmentDate]);
+
+  const chosenNames = registers.filter((r) => selected.includes(r.id)).map((r) => r.name);
+  const namesText = chosenNames.length > 3 ? `${chosenNames.slice(0, 2).join(", ")} and ${chosenNames.length - 2} more` : listText(chosenNames);
+  const prettyDate = (() => {
+    const d = new Date(`${enrollmentDate}T00:00:00Z`);
+    return Number.isNaN(d.getTime()) ? null : d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  })();
+  const audit = auditNote("Downloading the template and mapping users are recorded with your name and the time.");
 
   const next = () => {
     if (step === 0) attendanceActions.setMappingRegisters(selected);
     if (step < LAST_STEP) return setStep((s) => s + 1);
     attendanceActions.setMappingOptions({ enrollment, enrollmentDate });
+    // The answers now live with the review page (Back returns to them), so drop the in-progress copy.
+    attendanceActions.saveMappingDraft(null);
     navigate("/attendance/map-summary");
   };
 
@@ -251,11 +270,28 @@ export default function MapTemplate() {
                 {loading ? (
                   <Loader text="Loading registers…" />
                 ) : (
-                  <>
-                    <RegisterPicker registers={selectable} selected={selected} onChange={setSelected} newIds={newIds} />
-                    <RegisterMappingImpact registers={registers} selected={selected} />
-                  </>
+                  <RegisterPicker registers={selectable} selected={selected} onChange={setSelected} newIds={newIds} />
                 )}
+                {!loading &&
+                  (selected.length ? (
+                    <ResultLine>
+                      Your template will be pre-filled with {plural(selected.length, "register")} on all 3 tabs: Frontline Workers, Attendance Markers
+                      and Attendance Approvers.
+                    </ResultLine>
+                  ) : (
+                    <ResultLine muted>Select registers to see what your template will be pre-filled with.</ResultLine>
+                  ))}
+                <WhatHappens
+                  notes={[
+                    SAVED_NOTE,
+                    {
+                      kind: "effect",
+                      title: "Users are added when you upload",
+                      text: "Nobody is mapped until you upload the filled template. Uploading a user again with the same User ID in a register replaces their details.",
+                    },
+                    audit,
+                  ]}
+                />
               </>
             )}
 
@@ -265,6 +301,9 @@ export default function MapTemplate() {
                 <p className="mt-1 text-sm text-muted-foreground">
                   This is the enrollment date. Users appear on the register from this date and can be marked Present or Absent.
                 </p>
+                <CarriedAnswer changeLabel="Change registers" onChange={() => setStep(0)}>
+                  You chose {plural(chosenNames.length, "register")}: {namesText}.
+                </CarriedAnswer>
                 <div className="mt-4 space-y-3">
                   {ENROLLMENT_OPTIONS.map((o) => (
                     <RadioCard key={o.label} label={o.label} text={o.text} selected={enrollment === o.label} onSelect={() => setEnrollment(o.label)} />
@@ -278,7 +317,34 @@ export default function MapTemplate() {
                     hint="The campaign start date is selected by default. You can change it if needed."
                   />
                 )}
-                <EnrollmentImpact sameDate={enrollment === "Same date for all users"} date={enrollmentDate} />
+                {sameDate ? (
+                  <ResultLine>
+                    {prettyDate
+                      ? `Every user in ${chosenNames.length === 1 ? "this register" : `these ${chosenNames.length} registers`} can be marked Present or Absent from ${prettyDate}. The date is pre-filled in the template.`
+                      : "Choose a date to see when users can be marked."}
+                  </ResultLine>
+                ) : (
+                  <ResultLine>
+                    You will enter an Enrollment Date for each user in the template. Each user can be marked Present or Absent from their own date.
+                  </ResultLine>
+                )}
+                <WhatHappens
+                  notes={[
+                    SAVED_NOTE,
+                    sameDate
+                      ? {
+                          kind: "effect",
+                          title: "Filled in for you",
+                          text: "Enrollment Date is pre-filled for every user on all 3 tabs, so you don't need to fill in any dates.",
+                        }
+                      : {
+                          kind: "effect",
+                          title: "Every user needs a date",
+                          text: "Enrollment Date is a required column. Fill it in for each user on all 3 tabs before you upload.",
+                        },
+                    audit,
+                  ]}
+                />
               </>
             )}
           </div>
