@@ -243,7 +243,7 @@ export default function MapTemplate() {
                     title="About this step"
                     decided={selected.length > 0}
                     why="Mapping links each user to a register, so they belong to the boundaries that register covers."
-                    how="Once mapped to a register a supervisor, frontline worker, marker, or proximity supervisor belongs to that register’s boundaries."
+                    how="Once mapped to a register, Frontline Workers (the people whose attendance is marked), Attendance Markers (the people who mark it) and Attendance Approvers (the people who check and approve it) belong to that register’s boundaries."
                     outcome={
                       selected.length
                         ? `${plural(selected.length, "register")} selected. You'll map users to ${selected.length === 1 ? "this register" : "these registers"} in your template.`
@@ -255,7 +255,7 @@ export default function MapTemplate() {
                     title="About this step"
                     decided
                     why="Users can only be marked present or absent from a certain date onward, so an enrollment date needs to be set for each user."
-                    how="The enrollment date decides when each user starts being marked present or absent. A different date means setting it separately for every user on each tab (Frontline Workers: the people whose attendance is marked; Attendance Markers: the people who mark it; Attendance Approvers: the people who check and approve it)."
+                    how="The enrollment date decides when each user starts being marked present or absent. A different date means setting it separately for every user on each tab."
                     outcome={
                       enrollment === "Same date for all users"
                         ? `Users in ${selected.length === 1 ? "this register" : `these ${selected.length} registers`} can be marked from ${prettyDate(enrollmentDate)}.`
