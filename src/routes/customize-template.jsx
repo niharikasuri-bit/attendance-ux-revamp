@@ -97,16 +97,16 @@ export default function CustomizeTemplate() {
               summary={
                 step === 0 ? (
                   <PurposeBox
-                    title="Your registers"
+                    title="About this step"
                     decided={levels.length > 0}
-                    why="Each register is for one area. A supervisor uses it to mark their workers present or absent."
-                    how="Your template will have one row for each register, ready for you to check and upload."
+                    why="This makes sure every supervisor has a register for the area where they mark attendance."
+                    how="Each level you choose adds a row to your template for every area at that level."
                     outcome={
                       levels.length
                         ? `${total} ${total === 1 ? "register" : "registers"} will be created: ${listText(
                             BOUNDARY_LEVELS.filter((l) => levels.includes(l.label)).map((l) => `${countOf(l)} for ${l.label}`),
                           )}.`
-                        : "A register will be created for every area in the levels you choose."
+                        : null
                     }
                   />
                 ) : (
