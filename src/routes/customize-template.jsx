@@ -6,7 +6,6 @@ import { Checkbox, RadioDot, backButtonClass, primaryButtonClass } from "@/compo
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { attendanceActions, getState } from "@/lib/attendance-store";
 import { ChoiceInfo } from "@/components/choice-guide";
-import { TutorialPrompt } from "@/components/tutorial-prompt";
 import { InfoTooltip } from "@/components/info-tooltip";
 import { BeforeYouBegin, REGISTER_STEPS } from "@/components/before-you-begin";
 import { hasGeneratedRegisters } from "./attendance-home";
@@ -220,9 +219,6 @@ export default function CustomizeTemplate() {
                 </div>
               </>
             )}
-          </div>
-          <div className="mt-5">
-            <TutorialPrompt question="Not sure how to customize your attendance register template?" />
           </div>
         </div>
       </main>

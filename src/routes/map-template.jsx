@@ -6,7 +6,6 @@ import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioCard, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { attendanceActions, getRegisters, getState, useAttendanceStore } from "@/lib/attendance-store";
 import { ChoiceInfo } from "@/components/choice-guide";
-import { TutorialPrompt } from "@/components/tutorial-prompt";
 import { BeforeYouBegin, MAPPING_STEPS } from "@/components/before-you-begin";
 
 // Steps: 0 registers, 1 enrollment date.
@@ -300,9 +299,6 @@ export default function MapTemplate() {
                 )}
               </>
             )}
-          </div>
-          <div className="mt-5">
-            <TutorialPrompt question="Not sure how to customize your user mapping template?" />
           </div>
         </div>
       </main>
