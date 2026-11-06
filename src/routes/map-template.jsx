@@ -5,7 +5,7 @@ import { ChevronLeft, Info, Search, X } from "lucide-react";
 import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioCard, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { attendanceActions, getRegisters, getState, useAttendanceStore } from "@/lib/attendance-store";
-import { ChoiceInfo } from "@/components/choice-guide";
+import { SummaryBox, WithSummary } from "@/components/choice-guide";
 import { BeforeYouBegin, MAPPING_STEPS } from "@/components/before-you-begin";
 
 // Steps: 0 registers, 1 enrollment date.
@@ -237,15 +237,29 @@ export default function MapTemplate() {
           </div>
 
           <div className="mt-5 rounded-lg border border-border bg-card px-8 py-6">
+            <WithSummary
+              summary={
+                <SummaryBox
+                  title="Your selection"
+                  decided={selected.length > 0}
+                  note="Users can only be marked in the registers they are added to."
+                  stat={{ value: selected.length, label: selected.length === 1 ? "register" : "registers" }}
+                  rows={
+                    step === 0
+                      ? (() => {
+                          const names = registers.filter((r) => selected.includes(r.id)).map((r) => r.name);
+                          const shown = names.slice(0, 4).map((n, i) => [i === 0 ? "Registers" : "", n]);
+                          return names.length > 4 ? [...shown, ["", `+ ${names.length - 4} more`]] : shown;
+                        })()
+                      : [["Start date", enrollment === "Same date for all users" ? prettyDate(enrollmentDate) : "A date for each user"]]
+                  }
+                />
+              }
+            >
             {step === 0 && (
               <>
                 <h2 className="text-2xl font-bold text-heading">Which registers do you want to map users to?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">The template will be pre-filled with the Register IDs and boundaries of the registers you select.</p>
-                <ChoiceInfo decided={selected.length > 0} title={selected.length ? "Based on your selection" : null}>
-                  {selected.length
-                    ? `Your template will be pre-filled with ${plural(selected.length, "register")}, ready for you to add users on all 3 tabs.`
-                    : "Users can only be marked in the registers they are added to."}
-                </ChoiceInfo>
                 {!loading && hiddenCount > 0 && noticeOpen && (
                   <div role="note" className="mt-4 flex items-start gap-2.5 rounded-md border border-info-foreground/20 bg-info px-4 py-3 text-sm">
                     <Info className="mt-0.5 size-4 shrink-0 text-info-foreground" aria-hidden="true" />
@@ -279,11 +293,6 @@ export default function MapTemplate() {
                 <p className="mt-1 text-sm text-muted-foreground">
                   This is the enrollment date. Users appear on the register from this date and can be marked Present or Absent.
                 </p>
-                <ChoiceInfo decided title="Based on your selection">
-                  {enrollment === "Same date for all users"
-                    ? `Every user in ${plural(selected.length, "register")} can be marked Present or Absent from ${prettyDate(enrollmentDate)}. The date is pre-filled in the template.`
-                    : "You will enter an Enrollment Date for each user on all 3 tabs of the template. Each user can be marked from their own date."}
-                </ChoiceInfo>
                 <div className="mt-4 space-y-3">
                   {ENROLLMENT_OPTIONS.map((o) => (
                     <RadioCard key={o.label} label={o.label} text={o.text} selected={enrollment === o.label} onSelect={() => setEnrollment(o.label)} />
@@ -299,6 +308,7 @@ export default function MapTemplate() {
                 )}
               </>
             )}
+            </WithSummary>
           </div>
         </div>
       </main>

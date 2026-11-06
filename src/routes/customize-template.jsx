@@ -5,7 +5,7 @@ import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioDot, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { attendanceActions, getState } from "@/lib/attendance-store";
-import { ChoiceInfo } from "@/components/choice-guide";
+import { SummaryBox, WithSummary } from "@/components/choice-guide";
 import { InfoTooltip } from "@/components/info-tooltip";
 import { BeforeYouBegin, REGISTER_STEPS } from "@/components/before-you-begin";
 import { hasGeneratedRegisters } from "./attendance-home";
@@ -22,39 +22,8 @@ export const FREQUENCIES = [
   { label: "Twice a day", chip: "One register with multiple attendance sessions" },
 ];
 
-/** "You will create 117 registers, 1 for State, 6 for LGA, 14 for Ward and 96 for Settlement." */
-function registersSummary(levels) {
-  const chosen = BOUNDARY_LEVELS.filter((l) => levels.includes(l.label)).map((l) => ({ label: l.label, n: parseInt(l.count, 10) || 0 }));
-  const total = chosen.reduce((sum, l) => sum + l.n, 0);
-  const parts = chosen.map((l) => `${l.n} for ${l.label}`);
-  const list = parts.length < 2 ? parts.join("") : `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
-  return `You will create ${total} ${total === 1 ? "register" : "registers"}, ${list}.`;
-}
-
 const countOf = (level) => parseInt(level.count, 10) || 0;
 const totalRegisters = (levels) => BOUNDARY_LEVELS.filter((l) => levels.includes(l.label)).reduce((sum, l) => sum + countOf(l), 0);
-const unitOf = (label) => (label === "LGA" ? "LGA" : label.toLowerCase());
-
-/** What picking a level does, shown before it is picked: "Creates 6 registers, one per LGA". */
-function levelEffect(level) {
-  const n = countOf(level);
-  return n === 1 ? `Creates 1 register for the ${unitOf(level.label)}` : `Creates ${n} registers, one per ${unitOf(level.label)}`;
-}
-
-const sessionsOf = (label) => (label === "Twice a day" ? 2 : 1);
-const timesText = (n) => (n === 1 ? "once a day" : "twice a day");
-const registersText = (n) => `${n} ${n === 1 ? "register" : "registers"}`;
-
-/** Before picking: "Attendance will be taken twice a day in each of your 117 registers". */
-function frequencyEffect(f, total) {
-  const n = sessionsOf(f.label);
-  return total === 1 ? `Attendance will be taken ${timesText(n)} in your register` : `Attendance will be taken ${timesText(n)} in each of your ${registersText(total)}`;
-}
-
-/** After picking: "You will create 117 registers. Attendance will be taken twice a day in each one." */
-function frequencySummary(label, total) {
-  return `You will create ${registersText(total)}. Attendance will be taken ${timesText(sessionsOf(label))} in ${total === 1 ? "that register" : "each one"}.`;
-}
 
 export default function CustomizeTemplate() {
   const navigate = useNavigate();
@@ -122,17 +91,35 @@ export default function CustomizeTemplate() {
           </div>
 
           <div className="mt-5 rounded-lg border border-border bg-card px-8 py-6">
+            <WithSummary
+              summary={
+                <SummaryBox
+                  title="Your registers"
+                  decided={step === 0 ? levels.length > 0 : !!frequency}
+                  showStat={step === 1}
+                  note={
+                    step === 0
+                      ? "Registers are created for the areas you choose in the boundaries step."
+                      : "Choose how often attendance is taken to see what your registers will have."
+                  }
+                  stat={{ value: total, label: total === 1 ? "register" : "registers" }}
+                  rows={
+                    step === 0
+                      ? BOUNDARY_LEVELS.filter((l) => levels.includes(l.label)).map((l) => [l.label, String(countOf(l))])
+                      : [
+                          ["Areas", levels.join(", ")],
+                          ["Attendance", frequency ?? "Not chosen yet"],
+                        ]
+                  }
+                />
+              }
+            >
             {step === 0 && (
               <>
                 <h2 className="text-2xl font-bold text-heading">Where will attendance be taken?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Choose the levels where one person marks attendance for their workers. You get one register for each area at these levels.
+                  Choose the levels where a supervisor marks attendance for their workers. You get one register for each area at these levels.
                 </p>
-                <ChoiceInfo decided={levels.length > 0} title={levels.length ? "Based on your selection" : null}>
-                  {levels.length
-                    ? registersSummary(levels)
-                    : "Registers are created for the areas you choose in the boundaries step."}
-                </ChoiceInfo>
                 <div className="mt-5 grid gap-2 sm:grid-cols-[216px_minmax(0,1fr)] sm:items-center sm:gap-6">
                   <span className="flex items-center gap-1.5">
                     <label className="text-sm font-bold text-foreground">
@@ -177,7 +164,6 @@ export default function CustomizeTemplate() {
                             <Checkbox checked={levels.includes(level.label)} size="size-4.5" />
                             <span className="min-w-0">
                               <span className="block text-sm font-semibold text-foreground">{level.label}</span>
-                              <span className="block text-xs text-muted-foreground">{levelEffect(level)}</span>
                             </span>
                             <span className="ml-auto shrink-0 text-xs text-muted-foreground">{level.count}</span>
                           </button>
@@ -193,11 +179,6 @@ export default function CustomizeTemplate() {
               <>
                 <h2 className="text-2xl font-bold text-heading">How many times a day is attendance taken?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">Choose how many times a day workers are marked present or absent.</p>
-                <ChoiceInfo decided={!!frequency} title={frequency ? "Based on your selection" : null}>
-                  {frequency
-                    ? frequencySummary(frequency, total)
-                    : "Every register you create follows this."}
-                </ChoiceInfo>
                 <div className="mt-4 space-y-3">
                   {FREQUENCIES.map((f) => (
                     <button
@@ -212,13 +193,13 @@ export default function CustomizeTemplate() {
                       <span>
                         <span className="block text-sm font-bold text-heading">{f.label}</span>
                         <span className="mt-1.5 inline-block rounded-xs bg-chip px-2 py-1 text-[11px] font-semibold text-heading">{f.chip}</span>
-                        <span className="mt-1.5 block text-xs text-muted-foreground">{frequencyEffect(f, total)}</span>
                       </span>
                     </button>
                   ))}
                 </div>
               </>
             )}
+            </WithSummary>
           </div>
         </div>
       </main>
