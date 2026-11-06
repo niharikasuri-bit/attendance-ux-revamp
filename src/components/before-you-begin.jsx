@@ -81,6 +81,20 @@ function RegistersArt() {
   );
 }
 
+function FolderArt() {
+  return (
+    <svg viewBox="0 0 120 80" className="h-full w-full">
+      <path d="M20 18 h28 l6 7 h46 a4 4 0 0 1 4 4 v39 a4 4 0 0 1-4 4 H20 a4 4 0 0 1-4-4 V22 a4 4 0 0 1 4-4Z" fill={H} />
+      <rect x="22" y="30" width="78" height="40" rx="3" fill="#fff" stroke={G2} strokeWidth="2" />
+      <rect x="30" y="38" width="30" height="5" rx="2" fill={G} />
+      <rect x="30" y="48" width="44" height="4" rx="2" fill={G} />
+      <rect x="30" y="56" width="36" height="4" rx="2" fill={G} />
+      <circle cx="96" cy="60" r="12" fill={P} />
+      <path d="M90 60 l4 4 8-8" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 function CalendarArt() {
   return (
     <svg viewBox="0 0 120 80" className="h-full w-full">
@@ -118,54 +132,51 @@ function PeopleArt() {
   );
 }
 
-/* ---------- Content for each flow ---------- */
+/* ---------- Content for each flow: what needs to be in place first ---------- */
 
 export const REGISTER_STEPS = {
-  intro: "Creating attendance registers takes four short steps. Here's what's ahead:",
+  intro: "Before you create attendance registers, please make sure the following are ready for your campaign.",
   steps: [
-    { Art: MapArt, title: "Choose Boundary Levels", text: "The areas you want registers for, such as LGA or Ward." },
-    { Art: ClockArt, title: "Set Attendance Frequency", text: "How many times a day attendance is recorded." },
-    { Art: SheetArt, title: "Review and Download", text: "A preview of your Excel template, ready to download." },
-    { Art: UploadArt, title: "Fill In and Upload", text: "Complete the template in Excel and upload it to create your registers." },
+    { Art: MapArt, title: "Campaign Boundaries", text: "Boundaries need to be selected for the campaign. Registers are created for these areas." },
+    { Art: FolderArt, title: "Projects", text: "Projects need to be created before registers can be generated." },
+    { Art: ClockArt, title: "Attendance Frequency", text: "How many times a day attendance will be taken." },
   ],
 };
 
 export const MAPPING_STEPS = {
-  intro: "Mapping users to registers takes four short steps. Here's what's ahead:",
+  intro: "Before you map users to registers, please make sure you have the following information handy.",
   steps: [
-    { Art: RegistersArt, title: "Choose Registers", text: "The registers you want to add users to." },
-    { Art: CalendarArt, title: "Set Enrollment Date", text: "The date from which users can be marked Present or Absent." },
-    { Art: SheetArt, title: "Review and Download", text: "A preview of your user mapping template, ready to download." },
-    { Art: PeopleArt, title: "Add Users and Upload", text: "Add your users in Excel and upload the file to map them to registers." },
+    { Art: RegistersArt, title: "Attendance Registers", text: "Registers need to be created first. Users are mapped to these registers." },
+    { Art: PeopleArt, title: "Campaign Team", text: "A list of users with their user IDs, names, usernames, and roles." },
+    { Art: CalendarArt, title: "Enrollment Dates", text: "The date from which each user can be marked Present or Absent." },
   ],
 };
 
-/** The popup itself. `content` is REGISTER_STEPS or MAPPING_STEPS. */
+/** The popup itself. `content` is REGISTER_STEPS or MAPPING_STEPS. All text is Roboto (font-sans). */
 export function BeforeYouBegin({ open, onClose, content }) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="flex max-h-[90vh] max-w-[46rem] flex-col gap-0 bg-white p-0 sm:rounded-xl [&>button:last-child]:right-6 [&>button:last-child]:top-6 [&>button:last-child>svg]:size-6">
+      <DialogContent className="font-sans flex max-h-[90vh] max-w-[46rem] flex-col gap-0 bg-white p-0 sm:rounded-xl [&>button:last-child]:right-6 [&>button:last-child]:top-6 [&>button:last-child>svg]:size-6">
         <div className="border-b border-border px-6 pb-5 pt-7 sm:px-8">
-          <DialogTitle className="font-condensed text-3xl font-bold leading-tight text-heading">Before you Begin</DialogTitle>
+          <DialogTitle className="font-sans text-[2rem] font-bold leading-tight text-heading">Before you Begin</DialogTitle>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5 sm:px-8">
           <DialogDescription className="text-base leading-relaxed text-foreground/80">{content.intro}</DialogDescription>
-          <ol className="mt-2">
-            {content.steps.map(({ Art, title, text }, i) => (
+          <ul className="mt-2">
+            {content.steps.map(({ Art, title, text }) => (
               <li key={title} className="flex items-center gap-4 border-b border-border py-5 last:border-0 sm:gap-6">
                 <span className="h-14 w-[84px] shrink-0 sm:h-20 sm:w-[120px]" aria-hidden="true">
                   <Art />
                 </span>
                 <span className="min-w-0">
-                  <span className="block font-condensed text-xl font-bold leading-tight text-heading sm:text-2xl">
-                    <span className="sr-only">Step {i + 1}: </span>
-                    {title}
+                  <span className="block font-sans text-xl font-bold leading-tight text-heading sm:text-2xl">
+                                        {title}
                   </span>
                   <span className="mt-1 block text-base leading-snug text-foreground/80">{text}</span>
                 </span>
               </li>
             ))}
-          </ol>
+          </ul>
         </div>
         <div className="border-t border-border px-6 py-5 sm:px-8">
           <button
