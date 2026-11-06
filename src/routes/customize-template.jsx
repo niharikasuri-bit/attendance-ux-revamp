@@ -5,7 +5,7 @@ import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioDot, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { attendanceActions, getState } from "@/lib/attendance-store";
-import { ChoiceGuide } from "@/components/choice-guide";
+import { ChoiceInfo } from "@/components/choice-guide";
 import { BeforeYouBegin, REGISTER_STEPS } from "@/components/before-you-begin";
 import { hasGeneratedRegisters } from "./attendance-home";
 
@@ -123,12 +123,11 @@ export default function CustomizeTemplate() {
                 <p className="mt-1 text-sm text-muted-foreground">
                   Select one or more boundary levels from the dropdown below. We'll create a register for every boundary at the levels you select.
                 </p>
-                <ChoiceGuide
-                  why="Each register lists the workers in one area, so their attendance can be marked in one place."
-                  how="Each level you select adds one register for every boundary at that level. Lower levels mean more, smaller registers."
-                  outcome={levels.length ? registersSummary(levels) : null}
-                  pending="Depends on the boundary levels you select."
-                />
+                <ChoiceInfo decided={levels.length > 0} title={levels.length ? "Based on your selection" : "Boundary levels decide how many registers you get"}>
+                  {levels.length
+                    ? registersSummary(levels)
+                    : "Every boundary at a level you pick gets its own register. A lower level, like Settlement, gives you more registers that each cover a smaller area."}
+                </ChoiceInfo>
                 <div className="mt-5 grid gap-2 sm:grid-cols-[216px_minmax(0,1fr)] sm:items-center sm:gap-6">
                   <label className="text-sm font-bold text-foreground">
                     Boundary level <span className="text-primary">*</span>
@@ -183,12 +182,11 @@ export default function CustomizeTemplate() {
               <>
                 <h2 className="text-2xl font-bold text-heading">How many times will attendance be recorded each day?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">Choose how many times attendance will be recorded each day.</p>
-                <ChoiceGuide
-                  why="Each time attendance is recorded in a day is one session. Workers are marked present or absent in every session."
-                  how="Every register gets the number of sessions you choose. Twice a day means each worker is marked two times a day."
-                  outcome={frequency ? frequencySummary(frequency, total) : null}
-                  pending="Depends on how often attendance is recorded."
-                />
+                <ChoiceInfo decided={!!frequency} title={frequency ? "Based on your selection" : "Frequency sets how many sessions each register has"}>
+                  {frequency
+                    ? frequencySummary(frequency, total)
+                    : "Each time attendance is taken in a day is one session. Workers are marked present or absent in every session."}
+                </ChoiceInfo>
                 <div className="mt-4 space-y-3">
                   {FREQUENCIES.map((f) => (
                     <button

@@ -5,7 +5,7 @@ import { ChevronLeft, Info, Search, X } from "lucide-react";
 import { AppShell, Breadcrumb, FlowFooter } from "@/components/app-shell";
 import { Checkbox, RadioCard, backButtonClass, primaryButtonClass } from "@/components/flow-controls";
 import { attendanceActions, getRegisters, getState, useAttendanceStore } from "@/lib/attendance-store";
-import { ChoiceGuide } from "@/components/choice-guide";
+import { ChoiceInfo } from "@/components/choice-guide";
 import { BeforeYouBegin, MAPPING_STEPS } from "@/components/before-you-begin";
 
 // Steps: 0 registers, 1 enrollment date.
@@ -237,16 +237,11 @@ export default function MapTemplate() {
               <>
                 <h2 className="text-2xl font-bold text-heading">Which registers do you want to map users to?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">The template will be pre-filled with the Register IDs and boundaries of the registers you select.</p>
-                <ChoiceGuide
-                  why="Attendance can only be marked for users who are on a register. Mapping puts your users on the right registers."
-                  how="Each register you select is added to all 3 tabs of the template: Frontline Workers, Attendance Markers and Attendance Approvers."
-                  outcome={
-                    selected.length
-                      ? `Your template will be pre-filled with ${plural(selected.length, "register")}, ready for you to add users to each one.`
-                      : null
-                  }
-                  pending="Depends on the registers you select."
-                />
+                <ChoiceInfo decided={selected.length > 0} title={selected.length ? "Based on your selection" : "Your selection decides who can be marked where"}>
+                  {selected.length
+                    ? `Your template will be pre-filled with ${plural(selected.length, "register")}, ready for you to add users on all 3 tabs.`
+                    : "Users can only be marked on registers they're mapped to. Each register you pick is added to the Frontline Workers, Attendance Markers and Attendance Approvers tabs."}
+                </ChoiceInfo>
                 {!loading && hiddenCount > 0 && noticeOpen && (
                   <div role="note" className="mt-4 flex items-start gap-2.5 rounded-md border border-info-foreground/20 bg-info px-4 py-3 text-sm">
                     <Info className="mt-0.5 size-4 shrink-0 text-info-foreground" aria-hidden="true" />
@@ -280,15 +275,11 @@ export default function MapTemplate() {
                 <p className="mt-1 text-sm text-muted-foreground">
                   This is the enrollment date. Users appear on the register from this date and can be marked Present or Absent.
                 </p>
-                <ChoiceGuide
-                  why="Users can only be marked Present or Absent from their enrollment date, so this decides when attendance starts for them."
-                  how="One date for everyone is filled in for you. Different dates mean you enter one for each user in the template."
-                  outcome={
-                    enrollment === "Same date for all users"
-                      ? `Every user in ${plural(selected.length, "register")} can be marked from ${prettyDate(enrollmentDate)}. The date is pre-filled in the template.`
-                      : `You will enter an Enrollment Date for each user on all 3 tabs of the template.`
-                  }
-                />
+                <ChoiceInfo decided title="Based on your selection">
+                  {enrollment === "Same date for all users"
+                    ? `Every user in ${plural(selected.length, "register")} can be marked Present or Absent from ${prettyDate(enrollmentDate)}. The date is pre-filled in the template.`
+                    : "You will enter an Enrollment Date for each user on all 3 tabs of the template. Each user can be marked from their own date."}
+                </ChoiceInfo>
                 <div className="mt-4 space-y-3">
                   {ENROLLMENT_OPTIONS.map((o) => (
                     <RadioCard key={o.label} label={o.label} text={o.text} selected={enrollment === o.label} onSelect={() => setEnrollment(o.label)} />
