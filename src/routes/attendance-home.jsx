@@ -87,7 +87,6 @@ export default function AttendanceHome() {
 
               <hr className="mt-5 border-border" />
               <h3 className="mt-4 text-sm font-bold text-heading">Who is in a register?</h3>
-              <p className="mt-0.5 text-xs text-muted-foreground">You add these people by mapping users to the register.</p>
               <div className="mt-2 grid gap-2 sm:grid-cols-3">
                 {[
                   { label: "Frontline Workers", text: "The people whose attendance is marked." },
