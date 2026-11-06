@@ -124,14 +124,14 @@ export default function CustomizeTemplate() {
           <div className="mt-5 rounded-lg border border-border bg-card px-8 py-6">
             {step === 0 && (
               <>
-                <h2 className="text-2xl font-bold text-heading">What boundary levels are you generating registers for?</h2>
+                <h2 className="text-2xl font-bold text-heading">Where will attendance be taken?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Select one or more boundary levels from the dropdown below. We'll create a register for every boundary at the levels you select.
+                  Choose the levels where one person marks attendance for their workers. You get one register for each area at these levels.
                 </p>
-                <ChoiceInfo decided={levels.length > 0} title={levels.length ? "Based on your selection" : "Boundary levels decide how many registers you get"}>
+                <ChoiceInfo decided={levels.length > 0} title={levels.length ? "Based on your selection" : null}>
                   {levels.length
                     ? registersSummary(levels)
-                    : "You get one register for every boundary at the levels you select."}
+                    : "Registers are created for the areas you choose in the boundaries step."}
                 </ChoiceInfo>
                 <div className="mt-5 grid gap-2 sm:grid-cols-[216px_minmax(0,1fr)] sm:items-center sm:gap-6">
                   <label className="text-sm font-bold text-foreground">
@@ -185,12 +185,12 @@ export default function CustomizeTemplate() {
 
             {step === 1 && (
               <>
-                <h2 className="text-2xl font-bold text-heading">How many times will attendance be recorded each day?</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Choose how many times attendance will be recorded each day.</p>
-                <ChoiceInfo decided={!!frequency} title={frequency ? "Based on your selection" : "Frequency decides how often attendance is taken"}>
+                <h2 className="text-2xl font-bold text-heading">How many times a day is attendance taken?</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Choose how many times a day workers are marked present or absent.</p>
+                <ChoiceInfo decided={!!frequency} title={frequency ? "Based on your selection" : null}>
                   {frequency
                     ? frequencySummary(frequency, total)
-                    : "Attendance will be taken this many times a day in every register."}
+                    : "Every register you create follows this."}
                 </ChoiceInfo>
                 <div className="mt-4 space-y-3">
                   {FREQUENCIES.map((f) => (

@@ -242,10 +242,10 @@ export default function MapTemplate() {
               <>
                 <h2 className="text-2xl font-bold text-heading">Which registers do you want to map users to?</h2>
                 <p className="mt-1 text-sm text-muted-foreground">The template will be pre-filled with the Register IDs and boundaries of the registers you select.</p>
-                <ChoiceInfo decided={selected.length > 0} title={selected.length ? "Based on your selection" : "Your selection decides who can be marked where"}>
+                <ChoiceInfo decided={selected.length > 0} title={selected.length ? "Based on your selection" : null}>
                   {selected.length
                     ? `Your template will be pre-filled with ${plural(selected.length, "register")}, ready for you to add users on all 3 tabs.`
-                    : "Users can only be marked on the registers they are mapped to."}
+                    : "Users can only be marked in the registers they are added to."}
                 </ChoiceInfo>
                 {!loading && hiddenCount > 0 && noticeOpen && (
                   <div role="note" className="mt-4 flex items-start gap-2.5 rounded-md border border-info-foreground/20 bg-info px-4 py-3 text-sm">

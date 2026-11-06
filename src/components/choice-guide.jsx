@@ -14,8 +14,8 @@ export function ChoiceInfo({ decided, title, children }) {
         aria-hidden="true"
         className={`absolute inset-y-0 left-0 w-1 transition-colors duration-300 ${decided ? "bg-info-foreground" : "bg-muted-foreground/40"}`}
       />
-      <p className={`text-sm font-semibold ${decided ? "text-info-foreground" : "text-heading"}`}>{title}</p>
-      <p className={`mt-0.5 text-sm leading-relaxed ${decided ? "font-medium text-heading" : "text-muted-foreground"}`}>{children}</p>
+      {title && <p className={`mb-0.5 text-sm font-semibold ${decided ? "text-info-foreground" : "text-heading"}`}>{title}</p>}
+      <p className={`text-sm leading-relaxed ${decided ? "font-medium text-heading" : "text-muted-foreground"}`}>{children}</p>
     </div>
   );
 }
