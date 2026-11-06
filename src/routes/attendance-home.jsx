@@ -73,7 +73,6 @@ export default function AttendanceHome() {
 
               <hr className="mt-5 border-border" />
               <h3 className="mt-4 text-sm font-bold text-heading">What's inside a register?</h3>
-              <p className="mt-0.5 text-xs text-muted-foreground">You set these when you create the register template.</p>
               <div className="mt-2 grid gap-2 sm:grid-cols-2">
                 {[
                   { label: "Boundary levels", text: "The boundary the register covers. Every boundary at the levels you choose gets its own register." },
